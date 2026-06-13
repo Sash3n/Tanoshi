@@ -1,0 +1,15 @@
+<button
+  (click)="openFilePicker()"
+  aria-label="Import manga file"
+  class="fixed bottom-24 right-5 w-14 h-14 rounded-full bg-[var(--tanoshi-accent-gold)] flex items-center justify-center shadow-lg active:scale-95 transition-transform duration-150 z-50"
+>
+  <lucide-icon [img]="plusIcon" size="24" color="#0D0D0D" />
+</button>
+
+<input
+  #fileInput
+  type="file"
+  class="hidden"
+  [accept]="acceptedFileTypes"
+  (change)="onFileChange($event)"
+/>

@@ -1,0 +1,45 @@
+<a
+  [routerLink]="['/series', series().id]"
+  class="group flex flex-col rounded-lg overflow-hidden bg-[var(--tanoshi-bg-surface)] border border-[var(--tanoshi-border-subtle)] hover:border-[var(--tanoshi-accent-gold)] transition-colors duration-200 cursor-pointer"
+>
+  <!-- Cover image -->
+  <div class="relative aspect-[2/3] overflow-hidden bg-[var(--tanoshi-bg-elevated)]">
+    @if (series().coverImageBase64) {
+      <img
+        [src]="series().coverImageBase64!"
+        [alt]="series().title"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        loading="lazy"
+      />
+    } @else {
+      <div class="w-full h-full flex items-center justify-center">
+        <span class="text-[var(--tanoshi-text-tertiary)] text-xs text-center px-2 font-mono">
+          {{ series().title }}
+        </span>
+      </div>
+    }
+
+    <!-- Active reading badge -->
+    @if (hasActiveReading()) {
+      <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[var(--tanoshi-accent-gold)]"></div>
+    }
+  </div>
+
+  <!-- Card body -->
+  <div class="p-2 flex flex-col gap-1">
+    <h3 class="text-[var(--tanoshi-text-primary)] text-xs font-medium leading-tight line-clamp-2 font-serif">
+      {{ series().title }}
+    </h3>
+    <p class="text-[var(--tanoshi-text-tertiary)] text-[10px] font-mono">
+      {{ series().totalChapterCount }} ch
+    </p>
+
+    <!-- Gold progress bar -->
+    <div class="h-0.5 w-full rounded-full bg-[var(--tanoshi-progress-track)] mt-1">
+      <div
+        class="h-full rounded-full bg-[var(--tanoshi-accent-gold)] transition-all duration-300"
+        [style.width.%]="readPercentage()"
+      ></div>
+    </div>
+  </div>
+</a>
