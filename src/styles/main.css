@@ -1,0 +1,21 @@
+@import './_tokens.css';
+@import './_reset.css';
+@import 'tailwindcss';
+
+@theme {
+  --color-tanoshi-bg-base:        var(--tanoshi-bg-base);
+  --color-tanoshi-bg-surface:     var(--tanoshi-bg-surface);
+  --color-tanoshi-bg-elevated:    var(--tanoshi-bg-elevated);
+  --color-tanoshi-text-primary:   var(--tanoshi-text-primary);
+  --color-tanoshi-text-secondary: var(--tanoshi-text-secondary);
+  --color-tanoshi-text-tertiary:  var(--tanoshi-text-tertiary);
+  --color-tanoshi-accent-gold:    var(--tanoshi-accent-gold);
+  --color-tanoshi-accent-teal:    var(--tanoshi-accent-teal);
+  --color-tanoshi-border-subtle:  var(--tanoshi-border-subtle);
+  --color-tanoshi-border-medium:  var(--tanoshi-border-medium);
+  --color-tanoshi-progress-track: var(--tanoshi-progress-track);
+
+  --font-family-serif-jp: 'Noto Serif JP', Georgia, serif;
+  --font-family-sans:     'Inter', system-ui, sans-serif;
+  --font-family-mono:     'JetBrains Mono', 'Fira Code', monospace;
+}

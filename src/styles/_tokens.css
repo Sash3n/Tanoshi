@@ -1,0 +1,13 @@
+:root {
+  --tanoshi-bg-base:          #0D0D0D;
+  --tanoshi-bg-surface:       #141414;
+  --tanoshi-bg-elevated:      #1A1A1A;
+  --tanoshi-text-primary:     #E8E8E0;
+  --tanoshi-text-secondary:   #888888;
+  --tanoshi-text-tertiary:    #555555;
+  --tanoshi-accent-gold:      #C8A96E;
+  --tanoshi-accent-teal:      #4A9E8E;
+  --tanoshi-border-subtle:    #2A2A2A;
+  --tanoshi-border-medium:    #3A3A3A;
+  --tanoshi-progress-track:   #1E1E1E;
+}
