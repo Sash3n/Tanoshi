@@ -1,3 +1,66 @@
-<div class="flex items-center justify-center h-screen text-tanoshi-text-secondary">
-  Series Detail — coming soon
-</div>
+@if (isLoading()) {
+  <div class="flex items-center justify-center h-screen bg-[var(--tanoshi-bg-base)]">
+    <div class="w-6 h-6 border-2 border-[var(--tanoshi-accent-gold)] border-t-transparent rounded-full animate-spin"></div>
+  </div>
+} @else if (series()) {
+  <div class="min-h-screen bg-[var(--tanoshi-bg-base)] flex flex-col">
+
+    <!-- Full-bleed cover hero -->
+    <div class="relative w-full aspect-[3/2] overflow-hidden bg-[var(--tanoshi-bg-elevated)] shrink-0">
+      @if (series()!.coverImageBase64) {
+        <img
+          [src]="series()!.coverImageBase64!"
+          [alt]="series()!.title"
+          class="w-full h-full object-cover"
+        />
+      }
+      <!-- Dark gradient overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-[var(--tanoshi-bg-base)] via-[var(--tanoshi-bg-base)]/60 to-transparent"></div>
+
+      <!-- Back button -->
+      <button
+        [routerLink]="['/library']"
+        class="absolute top-12 left-4 flex items-center gap-1.5 text-[var(--tanoshi-text-primary)]"
+        aria-label="Back to library"
+      >
+        <lucide-icon [img]="arrowLeftIcon" size="20" />
+      </button>
+
+      <!-- Title overlay -->
+      <div class="absolute bottom-0 left-0 right-0 px-4 pb-4">
+        <h1 class="text-[var(--tanoshi-text-primary)] text-2xl font-serif leading-tight">
+          {{ series()!.title }}
+        </h1>
+        <p class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono mt-1">
+          {{ series()!.totalChapterCount }} chapters &middot; {{ series()!.fileFormat.toUpperCase() }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Metadata card -->
+    <app-series-metadata-card
+      [series]="series()!"
+      [metadata]="metadata()"
+    />
+
+    <!-- Chapter list header -->
+    <div class="px-4 py-2 flex items-center border-t border-[var(--tanoshi-border-subtle)]">
+      <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono uppercase tracking-widest">
+        Chapters
+      </span>
+    </div>
+
+    <!-- Chapter list -->
+    @if (chapters().length > 0) {
+      <app-chapter-list
+        [chapters]="chapters()"
+        [progressList]="progressList()"
+      />
+    } @else {
+      <div class="px-4 py-8 text-center text-[var(--tanoshi-text-tertiary)] text-sm">
+        No chapters imported yet.
+      </div>
+    }
+
+  </div>
+}
