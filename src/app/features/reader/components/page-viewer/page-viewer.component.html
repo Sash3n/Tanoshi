@@ -36,6 +36,13 @@
         [src]="store.currentPageBlobUrl()!"
         [alt]="'Page ' + (store.currentPageIndex() + 1)"
         [class]="'w-full h-full object-contain ' + pageTransitionClass()"
+        [style.filter]="store.pageFilter() === 'sepia'
+          ? 'sepia(80%) brightness(0.95)'
+          : store.pageFilter() === 'greyscale'
+            ? 'grayscale(100%)'
+            : store.pageFilter() === 'inverted'
+              ? 'invert(100%)'
+              : 'none'"
       />
     } @else {
       <div class="flex items-center justify-center h-full">

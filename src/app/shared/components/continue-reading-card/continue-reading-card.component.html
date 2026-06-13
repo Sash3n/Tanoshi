@@ -1,0 +1,42 @@
+@if (entry()) {
+  <div class="mx-4 mb-4 rounded-xl bg-[var(--tanoshi-bg-elevated)] border border-[var(--tanoshi-border-subtle)] overflow-hidden">
+    <a
+      [routerLink]="['/reader', entry()!.chapter.id]"
+      class="flex items-center gap-3 px-4 py-3 hover:bg-[var(--tanoshi-bg-surface)] transition-colors"
+    >
+      <!-- Cover thumbnail -->
+      @if (entry()!.series.coverImageBase64) {
+        <img
+          [src]="entry()!.series.coverImageBase64!"
+          [alt]="entry()!.series.title"
+          class="w-10 h-14 object-cover rounded shrink-0"
+        />
+      } @else {
+        <div class="w-10 h-14 rounded bg-[var(--tanoshi-bg-surface)] flex items-center justify-center shrink-0">
+          <lucide-icon [img]="bookIcon" size="16" color="var(--tanoshi-text-tertiary)" />
+        </div>
+      }
+
+      <!-- Info -->
+      <div class="flex-1 min-w-0">
+        <p class="text-[var(--tanoshi-text-tertiary)] text-[10px] font-mono uppercase tracking-widest mb-0.5">Continue reading</p>
+        <p class="text-[var(--tanoshi-text-primary)] text-sm font-medium truncate">{{ entry()!.series.title }}</p>
+        <p class="text-[var(--tanoshi-text-secondary)] text-xs font-mono mt-0.5">
+          Ch.{{ entry()!.chapter.chapterNumber }} &middot; p.{{ entry()!.progress.currentPageIndex + 1 }}
+        </p>
+        <!-- Mini progress bar -->
+        <div class="h-0.5 rounded-full bg-[var(--tanoshi-progress-track)] mt-2 overflow-hidden">
+          <div
+            class="h-full rounded-full bg-[var(--tanoshi-accent-gold)] transition-all"
+            [style.width.%]="progressPercent"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Play button -->
+      <div class="shrink-0 w-8 h-8 rounded-full bg-[var(--tanoshi-accent-gold)] flex items-center justify-center">
+        <lucide-icon [img]="playIcon" size="14" color="#0D0D0D" class="ml-0.5" />
+      </div>
+    </a>
+  </div>
+}

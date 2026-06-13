@@ -1,13 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { LucideAngularModule, ArrowLeft, BookOpen, Palette, HardDrive, Library, CheckCircle, Loader } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, BookOpen, Palette, HardDrive, Library, CheckCircle, Loader, BarChart2 } from 'lucide-angular';
 import { SettingsStore } from '../../state/settings.store';
 import { ReadingMode } from '../../../../domain/enums/reading-mode.enum';
+import { ReadingStatsComponent } from '../../components/reading-stats/reading-stats.component';
 
 @Component({
   selector: 'app-settings-page',
   standalone: true,
-  imports: [LucideAngularModule],
+  imports: [LucideAngularModule, ReadingStatsComponent],
   templateUrl: './settings-page.component.html',
 })
 export class SettingsPageComponent {
@@ -23,6 +24,7 @@ export class SettingsPageComponent {
   protected readonly libraryIcon = Library;
   protected readonly checkCircleIcon = CheckCircle;
   protected readonly loaderIcon = Loader;
+  protected readonly barChartIcon = BarChart2;
 
   protected readonly readingModeOptions = [
     { mode: ReadingMode.PagedRTL,  label: 'RTL',     sub: 'Manga style' },

@@ -1,0 +1,15 @@
+@if (stats()) {
+  <div class="grid grid-cols-2 gap-3">
+    @for (card of statCards(); track card.label) {
+      <div class="flex flex-col gap-2 px-4 py-3 rounded-xl bg-[var(--tanoshi-bg-surface)] border border-[var(--tanoshi-border-subtle)]">
+        <lucide-icon [img]="card.icon" size="16" color="var(--tanoshi-accent-gold)" />
+        <span class="text-[var(--tanoshi-text-primary)] text-xl font-serif">{{ card.value }}</span>
+        <span class="text-[var(--tanoshi-text-tertiary)] text-[10px] font-mono uppercase tracking-widest">{{ card.label }}</span>
+      </div>
+    }
+  </div>
+} @else {
+  <div class="flex items-center justify-center py-6">
+    <div class="w-5 h-5 border-2 border-[var(--tanoshi-accent-gold)] border-t-transparent rounded-full animate-spin"></div>
+  </div>
+}

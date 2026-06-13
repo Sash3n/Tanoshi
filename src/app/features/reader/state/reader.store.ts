@@ -55,6 +55,9 @@ export class ReaderStore {
   /** The page index at which progress was last saved. */
   readonly lastSavedPageIndex = signal<number>(0);
 
+  /** Active visual filter applied to page images. */
+  readonly pageFilter = signal<'none' | 'sepia' | 'greyscale' | 'inverted'>('none');
+
   /** The blob URL for the currently displayed page, or null if not yet loaded. */
   readonly currentPageBlobUrl = computed(() => {
     return this.loadedPages().get(this.currentPageIndex()) ?? null;
@@ -181,6 +184,14 @@ export class ReaderStore {
     this.loadedPages().forEach((url) => URL.revokeObjectURL(url));
     this.loadedPages.set(new Map());
     this.currentChapter.set(null);
+  }
+
+  /** Cycles through page filter modes: none → sepia → greyscale → inverted → none. */
+  cyclePageFilter(): void {
+    const order = ['none', 'sepia', 'greyscale', 'inverted'] as const;
+    const current = this.pageFilter();
+    const next = order[(order.indexOf(current) + 1) % order.length];
+    this.pageFilter.set(next);
   }
 
   /** Determines the tap action for a normalised X position (0–1). */

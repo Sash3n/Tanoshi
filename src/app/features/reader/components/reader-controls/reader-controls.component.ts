@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { LucideAngularModule, X, ChevronLeft, ChevronRight, AlignJustify, BookOpen } from 'lucide-angular';
+import { LucideAngularModule, X, ChevronLeft, ChevronRight, AlignJustify, BookOpen, SunMedium } from 'lucide-angular';
 import { ReaderStore } from '../../state/reader.store';
 import { ReadingMode } from '../../../../domain/enums/reading-mode.enum';
 
@@ -17,6 +17,7 @@ export class ReaderControlsComponent {
   protected readonly chevronRightIcon = ChevronRight;
   protected readonly alignJustifyIcon = AlignJustify;
   protected readonly bookOpenIcon = BookOpen;
+  protected readonly sunIcon = SunMedium;
 
   /** Expose enum to the template. */
   protected readonly ReadingMode = ReadingMode;

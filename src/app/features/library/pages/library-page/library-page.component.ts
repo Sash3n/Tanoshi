@@ -4,11 +4,12 @@ import { LibraryGridComponent } from '../../components/library-grid/library-grid
 import { ImportFabComponent } from '../../components/import-fab/import-fab.component';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { LucideAngularModule, Search } from 'lucide-angular';
+import { ContinueReadingCardComponent } from '../../../../shared/components/continue-reading-card/continue-reading-card.component';
 
 @Component({
   selector: 'app-library-page',
   standalone: true,
-  imports: [LibraryGridComponent, ImportFabComponent, EmptyStateComponent, LucideAngularModule],
+  imports: [LibraryGridComponent, ImportFabComponent, EmptyStateComponent, LucideAngularModule, ContinueReadingCardComponent],
   templateUrl: './library-page.component.html',
 })
 export class LibraryPageComponent implements OnInit {

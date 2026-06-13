@@ -51,6 +51,17 @@
       <lucide-icon [img]="chevronRightIcon" size="22" color="var(--tanoshi-text-primary)" />
     </button>
 
+    <!-- Comfort filter -->
+    <button
+      (click)="store.cyclePageFilter()"
+      class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[var(--tanoshi-bg-surface)] transition-colors"
+      [class.text-[var(--tanoshi-accent-gold)]]="store.pageFilter() !== 'none'"
+      aria-label="Cycle page filter"
+    >
+      <lucide-icon [img]="sunIcon" size="20"
+        [color]="store.pageFilter() !== 'none' ? 'var(--tanoshi-accent-gold)' : 'var(--tanoshi-text-secondary)'" />
+    </button>
+
     <!-- Close controls -->
     <button
       (click)="store.hideControls()"

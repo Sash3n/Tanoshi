@@ -33,6 +33,11 @@ export class ReadingProgressRepository {
     }
   }
 
+  /** Returns all progress records across all series, ordered by lastReadAt descending. */
+  async getAll(): Promise<IReadingProgress[]> {
+    return tanoshiDb.readingProgress.orderBy('lastReadAt').reverse().toArray();
+  }
+
   /** Deletes all progress records for a series. */
   async deleteBySeriesId(seriesId: string): Promise<void> {
     await tanoshiDb.readingProgress.where('seriesId').equals(seriesId).delete();
