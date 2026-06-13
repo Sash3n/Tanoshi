@@ -1,3 +1,121 @@
-<div class="flex items-center justify-center h-screen text-tanoshi-text-secondary">
-  Settings — coming soon
+<div class="min-h-screen bg-[var(--tanoshi-bg-base)] flex flex-col">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3 px-4 pt-12 pb-4 border-b border-[var(--tanoshi-border-subtle)]">
+    <button
+      (click)="onBack()"
+      class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[var(--tanoshi-bg-surface)] transition-colors"
+      aria-label="Back"
+    >
+      <lucide-icon [img]="arrowLeftIcon" size="20" color="var(--tanoshi-text-primary)" />
+    </button>
+    <h1 class="text-[var(--tanoshi-text-primary)] text-lg font-serif">Settings</h1>
+  </div>
+
+  <div class="flex-1 overflow-y-auto divide-y divide-[var(--tanoshi-border-subtle)]">
+
+    <!-- ── Reading ────────────────────────────────────────────────────────── -->
+    <section class="px-4 py-5">
+      <div class="flex items-center gap-2 mb-4">
+        <lucide-icon [img]="bookOpenIcon" size="16" color="var(--tanoshi-accent-gold)" />
+        <h2 class="text-[var(--tanoshi-text-secondary)] text-xs font-mono uppercase tracking-widest">Reading</h2>
+      </div>
+
+      <p class="text-[var(--tanoshi-text-primary)] text-sm mb-3">Default reading mode</p>
+      <div class="grid grid-cols-3 gap-2">
+
+        @for (option of readingModeOptions; track option.mode) {
+          <button
+            (click)="setReadingMode(option.mode)"
+            class="flex flex-col items-center gap-1 py-3 px-2 rounded-lg border transition-colors"
+            [class]="store.defaultReadingMode() === option.mode
+              ? 'border-[var(--tanoshi-accent-gold)] bg-[var(--tanoshi-bg-elevated)]'
+              : 'border-[var(--tanoshi-border-medium)]'"
+          >
+            <span class="text-[var(--tanoshi-text-primary)] text-sm font-medium">{{ option.label }}</span>
+            <span class="text-[var(--tanoshi-text-tertiary)] text-[10px] font-mono">{{ option.sub }}</span>
+          </button>
+        }
+
+      </div>
+    </section>
+
+    <!-- ── Appearance ─────────────────────────────────────────────────────── -->
+    <section class="px-4 py-5">
+      <div class="flex items-center gap-2 mb-4">
+        <lucide-icon [img]="paletteIcon" size="16" color="var(--tanoshi-accent-gold)" />
+        <h2 class="text-[var(--tanoshi-text-secondary)] text-xs font-mono uppercase tracking-widest">Appearance</h2>
+      </div>
+
+      <p class="text-[var(--tanoshi-text-primary)] text-sm mb-3">Accent colour</p>
+      <div class="flex gap-3">
+
+        @for (option of accentOptions; track option.color) {
+          <button
+            (click)="store.setAccentColor(option.color)"
+            class="flex items-center gap-2.5 flex-1 py-3 px-4 rounded-lg border transition-all"
+            [class]="store.accentColor() === option.color
+              ? 'border-[var(--tanoshi-accent-gold)] bg-[var(--tanoshi-bg-elevated)]'
+              : 'border-[var(--tanoshi-border-medium)]'"
+          >
+            <span
+              class="w-4 h-4 rounded-full shrink-0"
+              [style.background-color]="option.hex"
+            ></span>
+            <span class="text-[var(--tanoshi-text-primary)] text-sm">{{ option.label }}</span>
+          </button>
+        }
+
+      </div>
+    </section>
+
+    <!-- ── Storage ────────────────────────────────────────────────────────── -->
+    <section class="px-4 py-5">
+      <div class="flex items-center gap-2 mb-4">
+        <lucide-icon [img]="hardDriveIcon" size="16" color="var(--tanoshi-accent-gold)" />
+        <h2 class="text-[var(--tanoshi-text-secondary)] text-xs font-mono uppercase tracking-widest">Storage</h2>
+      </div>
+
+      @if (store.storageUsedMB() !== null) {
+        <div class="mb-4">
+          <div class="flex justify-between items-baseline mb-2">
+            <span class="text-[var(--tanoshi-text-primary)] text-sm">
+              {{ store.storageUsedMB() }} MB used
+            </span>
+            @if (store.storageQuotaMB() !== null) {
+              <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono">
+                of {{ store.storageQuotaMB() }} MB
+              </span>
+            }
+          </div>
+          <div class="h-1 rounded-full bg-[var(--tanoshi-progress-track)] overflow-hidden">
+            <div
+              class="h-full rounded-full bg-[var(--tanoshi-accent-gold)] transition-all"
+              [style.width.%]="store.storagePercent()"
+            ></div>
+          </div>
+        </div>
+      } @else {
+        <p class="text-[var(--tanoshi-text-tertiary)] text-sm mb-4">Loading storage info…</p>
+      }
+
+      <button
+        (click)="onClearCache()"
+        [disabled]="isClearingCache()"
+        class="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[var(--tanoshi-border-medium)] hover:border-[var(--tanoshi-accent-gold)] transition-colors disabled:opacity-50"
+      >
+        @if (isClearingCache()) {
+          <lucide-icon [img]="loaderIcon" size="16" color="var(--tanoshi-text-secondary)" class="animate-spin" />
+        } @else if (cacheCleared()) {
+          <lucide-icon [img]="checkCircleIcon" size="16" color="var(--tanoshi-accent-gold)" />
+        } @else {
+          <lucide-icon [img]="hardDriveIcon" size="16" color="var(--tanoshi-text-secondary)" />
+        }
+        <span class="text-[var(--tanoshi-text-primary)] text-sm">
+          @if (cacheCleared()) { Cache cleared } @else { Clear metadata cache }
+        </span>
+      </button>
+    </section>
+
+  </div>
 </div>
