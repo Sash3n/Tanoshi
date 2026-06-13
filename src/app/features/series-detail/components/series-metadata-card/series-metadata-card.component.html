@@ -1,0 +1,47 @@
+<div class="px-4 py-4 flex flex-col gap-4">
+  <!-- Author / Artist -->
+  @if (displayAuthor || displayArtist) {
+    <div class="flex gap-4 text-sm">
+      @if (displayAuthor) {
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[var(--tanoshi-text-tertiary)] text-[10px] font-mono uppercase tracking-widest">Story</span>
+          <span class="text-[var(--tanoshi-text-secondary)]">{{ displayAuthor }}</span>
+        </div>
+      }
+      @if (displayArtist && displayArtist !== displayAuthor) {
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[var(--tanoshi-text-tertiary)] text-[10px] font-mono uppercase tracking-widest">Art</span>
+          <span class="text-[var(--tanoshi-text-secondary)]">{{ displayArtist }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Genre pills -->
+  @if (displayGenres.length > 0) {
+    <div class="flex flex-wrap gap-1.5">
+      @for (genre of displayGenres; track genre) {
+        <span class="px-2.5 py-1 rounded-full text-[11px] font-mono bg-[var(--tanoshi-accent-teal)]/10 text-[var(--tanoshi-accent-teal)] border border-[var(--tanoshi-accent-teal)]/25">
+          {{ genre }}
+        </span>
+      }
+    </div>
+  }
+
+  <!-- Synopsis -->
+  @if (displaySynopsis) {
+    <div class="flex flex-col gap-1.5">
+      <p class="text-[var(--tanoshi-text-secondary)] text-sm leading-relaxed">
+        {{ displaySynopsis }}
+      </p>
+      @if (canExpandSynopsis) {
+        <button
+          (click)="toggleSynopsis()"
+          class="text-[var(--tanoshi-accent-gold)] text-xs font-mono self-start hover:underline"
+        >
+          {{ isSynopsisExpanded() ? 'Show less' : 'Show more' }}
+        </button>
+      }
+    </div>
+  }
+</div>

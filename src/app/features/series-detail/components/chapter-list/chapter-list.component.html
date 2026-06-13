@@ -1,0 +1,38 @@
+<div class="flex flex-col divide-y divide-[var(--tanoshi-border-subtle)]">
+  @for (row of chapterRows(); track row.chapter.id) {
+    <a
+      [routerLink]="['/reader', row.chapter.id]"
+      class="flex items-center gap-3 px-4 py-3 hover:bg-[var(--tanoshi-bg-surface)] transition-colors duration-150"
+    >
+      <!-- Chapter number -->
+      <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono w-8 shrink-0 text-right">
+        {{ row.chapter.chapterNumber }}
+      </span>
+
+      <!-- Title and page count -->
+      <div class="flex-1 min-w-0">
+        <p class="text-[var(--tanoshi-text-primary)] text-sm truncate">
+          {{ row.chapter.title ?? 'Chapter ' + row.chapter.chapterNumber }}
+        </p>
+        <p class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono mt-0.5">
+          {{ row.chapter.pageCount }} pages
+        </p>
+      </div>
+
+      <!-- Status badge -->
+      @if (row.status === 'reading') {
+        <span class="shrink-0 px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-[var(--tanoshi-accent-gold)]/15 text-[var(--tanoshi-accent-gold)] border border-[var(--tanoshi-accent-gold)]/30">
+          p.{{ row.currentPage + 1 }}
+        </span>
+      } @else if (row.status === 'unread') {
+        <span class="shrink-0 px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-[var(--tanoshi-accent-teal)]/15 text-[var(--tanoshi-accent-teal)] border border-[var(--tanoshi-accent-teal)]/30">
+          unread
+        </span>
+      } @else {
+        <span class="shrink-0 px-2 py-0.5 rounded text-[10px] font-mono text-[var(--tanoshi-text-tertiary)] border border-[var(--tanoshi-border-subtle)]">
+          read
+        </span>
+      }
+    </a>
+  }
+</div>
