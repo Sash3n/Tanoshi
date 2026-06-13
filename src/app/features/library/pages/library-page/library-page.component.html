@@ -1,6 +1,6 @@
-<div class="min-h-screen bg-[var(--tanoshi-bg-base)] flex flex-col">
+<div class="min-h-screen bg-[var(--tanoshi-bg-base)] flex flex-col pb-20">
   <!-- Header -->
-  <header class="px-4 pt-12 pb-4 flex items-end justify-between">
+  <header class="px-4 pt-12 pb-3 flex items-end justify-between">
     <h1 class="text-[var(--tanoshi-text-primary)] text-2xl font-serif tracking-wide">
       たのし
     </h1>
@@ -8,6 +8,20 @@
       {{ store.seriesCount() }} series
     </span>
   </header>
+
+  <!-- Search bar -->
+  <div class="px-4 pb-3">
+    <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--tanoshi-bg-surface)] border border-[var(--tanoshi-border-subtle)]">
+      <lucide-icon [img]="searchIcon" size="16" color="var(--tanoshi-text-tertiary)" class="shrink-0" />
+      <input
+        type="search"
+        placeholder="Search series…"
+        class="flex-1 bg-transparent text-[var(--tanoshi-text-primary)] text-sm placeholder:text-[var(--tanoshi-text-tertiary)] outline-none"
+        [value]="store.searchQuery()"
+        (input)="store.setSearchQuery($any($event.target).value)"
+      />
+    </div>
+  </div>
 
   <!-- Error banner -->
   @if (store.errorMessage()) {
@@ -31,10 +45,15 @@
       <div class="flex items-center justify-center py-24">
         <div class="w-6 h-6 border-2 border-[var(--tanoshi-accent-gold)] border-t-transparent rounded-full animate-spin"></div>
       </div>
+    } @else if (store.filteredSeries().length === 0 && store.searchQuery()) {
+      <div class="flex flex-col items-center justify-center py-24 gap-3 px-8 text-center">
+        <lucide-icon [img]="searchIcon" size="40" color="var(--tanoshi-text-tertiary)" class="opacity-30" />
+        <p class="text-[var(--tanoshi-text-secondary)] text-sm">No series match "{{ store.searchQuery() }}"</p>
+      </div>
     } @else if (store.isEmpty()) {
       <app-empty-state />
     } @else {
-      <app-library-grid [seriesList]="store.seriesList()" />
+      <app-library-grid [seriesList]="store.filteredSeries()" />
     }
   </main>
 

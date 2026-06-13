@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LucideAngularModule, ArrowLeft, FolderOpen } from 'lucide-angular';
 import { ReaderStore } from '../../state/reader.store';
 import { ChapterRepository } from '../../../../data/repositories/chapter.repository';
@@ -8,11 +8,24 @@ import { ReaderControlsComponent } from '../../components/reader-controls/reader
 import { PageProgressBarComponent } from '../../components/page-progress-bar/page-progress-bar.component';
 import type { IChapter } from '../../../../domain/models/chapter.model';
 
+async function setImmersiveMode(enabled: boolean): Promise<void> {
+  try {
+    const { StatusBar, Style } = await import('@capacitor/status-bar');
+    if (enabled) {
+      await StatusBar.hide();
+    } else {
+      await StatusBar.show();
+      await StatusBar.setStyle({ style: Style.Dark });
+    }
+  } catch {
+    // Web/desktop: StatusBar plugin not available
+  }
+}
+
 @Component({
   selector: 'app-reader-page',
   standalone: true,
   imports: [
-    RouterLink,
     LucideAngularModule,
     PageViewerComponent,
     ReaderControlsComponent,
@@ -39,6 +52,7 @@ export class ReaderPageComponent implements OnInit, OnDestroy {
   protected chapterId = '';
 
   async ngOnInit(): Promise<void> {
+    void setImmersiveMode(true);
     const routeChapterId = this.#route.snapshot.paramMap.get('chapterId');
     if (!routeChapterId) {
       await this.#router.navigate(['/library']);
@@ -56,6 +70,7 @@ export class ReaderPageComponent implements OnInit, OnDestroy {
   }
 
   async ngOnDestroy(): Promise<void> {
+    void setImmersiveMode(false);
     await this.store.closeChapter();
   }
 

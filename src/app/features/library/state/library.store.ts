@@ -28,6 +28,20 @@ export class LibraryStore {
   /** Total number of series in the library. */
   readonly seriesCount = computed(() => this.seriesList().length);
 
+  /** Current search query (empty string means no filter). */
+  readonly searchQuery = signal<string>('');
+
+  /** Series filtered by the current search query, case-insensitive. */
+  readonly filteredSeries = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    if (!query) return this.seriesList();
+    return this.seriesList().filter((s) => s.title.toLowerCase().includes(query));
+  });
+
+  setSearchQuery(query: string): void {
+    this.searchQuery.set(query);
+  }
+
   /**
    * Loads all series from the database into the store.
    * Call this on library page init.

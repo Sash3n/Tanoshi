@@ -2,6 +2,7 @@
   @for (row of chapterRows(); track row.chapter.id) {
     <a
       [routerLink]="['/reader', row.chapter.id]"
+      [attr.data-chapter-id]="row.chapter.id"
       class="flex items-center gap-3 px-4 py-3 hover:bg-[var(--tanoshi-bg-surface)] transition-colors duration-150"
     >
       <!-- Chapter number -->

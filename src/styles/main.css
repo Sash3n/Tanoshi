@@ -18,4 +18,17 @@
   --font-family-serif-jp: 'Noto Serif JP', Georgia, serif;
   --font-family-sans:     'Inter', system-ui, sans-serif;
   --font-family-mono:     'JetBrains Mono', 'Fira Code', monospace;
+
+  --animate-slide-in-left:  slide-in-left 220ms ease-out both;
+  --animate-slide-in-right: slide-in-right 220ms ease-out both;
+
+  @keyframes slide-in-left {
+    from { transform: translateX(-6%); opacity: 0.6; }
+    to   { transform: translateX(0);   opacity: 1;   }
+  }
+
+  @keyframes slide-in-right {
+    from { transform: translateX(6%);  opacity: 0.6; }
+    to   { transform: translateX(0);   opacity: 1;   }
+  }
 }

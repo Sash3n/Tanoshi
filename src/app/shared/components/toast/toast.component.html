@@ -1,0 +1,30 @@
+<div class="fixed top-0 inset-x-0 z-[200] flex flex-col items-center gap-2 pt-safe px-4 pt-4 pointer-events-none">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div
+      class="pointer-events-auto flex items-center gap-3 w-full max-w-sm px-4 py-3 rounded-xl shadow-lg border transition-all"
+      [class]="toast.level === 'success'
+        ? 'bg-[var(--tanoshi-bg-elevated)] border-[var(--tanoshi-accent-gold)]/40'
+        : toast.level === 'error'
+          ? 'bg-[var(--tanoshi-bg-elevated)] border-red-700/50'
+          : 'bg-[var(--tanoshi-bg-elevated)] border-[var(--tanoshi-border-medium)]'"
+    >
+      @if (toast.level === 'success') {
+        <lucide-icon [img]="checkIcon" size="16" color="var(--tanoshi-accent-gold)" class="shrink-0" />
+      } @else if (toast.level === 'error') {
+        <lucide-icon [img]="errorIcon" size="16" color="#F87171" class="shrink-0" />
+      } @else {
+        <lucide-icon [img]="infoIcon" size="16" color="var(--tanoshi-text-secondary)" class="shrink-0" />
+      }
+
+      <span class="text-[var(--tanoshi-text-primary)] text-sm flex-1">{{ toast.message }}</span>
+
+      <button
+        (click)="toastService.dismiss(toast.id)"
+        class="shrink-0 opacity-50 hover:opacity-100 transition-opacity"
+        aria-label="Dismiss"
+      >
+        <lucide-icon [img]="closeIcon" size="14" color="var(--tanoshi-text-secondary)" />
+      </button>
+    </div>
+  }
+</div>

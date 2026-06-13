@@ -1,0 +1,23 @@
+<nav class="fixed bottom-0 inset-x-0 z-50 flex bg-[var(--tanoshi-bg-elevated)]/95 backdrop-blur-sm border-t border-[var(--tanoshi-border-subtle)] pb-safe">
+
+  <a
+    routerLink="/library"
+    routerLinkActive="text-[var(--tanoshi-accent-gold)]"
+    class="flex flex-col items-center gap-1 flex-1 py-3 text-[var(--tanoshi-text-tertiary)] transition-colors"
+    aria-label="Library"
+  >
+    <lucide-icon [img]="libraryIcon" size="22" />
+    <span class="text-[10px] font-mono">Library</span>
+  </a>
+
+  <a
+    routerLink="/settings"
+    routerLinkActive="text-[var(--tanoshi-accent-gold)]"
+    class="flex flex-col items-center gap-1 flex-1 py-3 text-[var(--tanoshi-text-tertiary)] transition-colors"
+    aria-label="Settings"
+  >
+    <lucide-icon [img]="settingsIcon" size="22" />
+    <span class="text-[10px] font-mono">Settings</span>
+  </a>
+
+</nav>

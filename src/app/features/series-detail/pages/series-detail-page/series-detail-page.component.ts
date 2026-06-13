@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, afterNextRender, Injector } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucideAngularModule, ArrowLeft } from 'lucide-angular';
 import { SeriesRepository } from '../../../../data/repositories/series.repository';
@@ -25,22 +25,13 @@ export class SeriesDetailPageComponent implements OnInit {
   readonly #chapterRepository = inject(ChapterRepository);
   readonly #progressRepository = inject(ReadingProgressRepository);
   readonly #metadataService = inject(MetadataService);
+  readonly #injector = inject(Injector);
 
-  /** The series being viewed, null while loading. */
   protected readonly series = signal<ISeries | null>(null);
-
-  /** Chapters sorted ascending by chapter number. */
   protected readonly chapters = signal<IChapter[]>([]);
-
-  /** Reading progress for all chapters of this series. */
   protected readonly progressList = signal<IReadingProgress[]>([]);
-
-  /** Metadata from AniList or MangaDex, null while fetching or if unavailable. */
   protected readonly metadata = signal<ISeriesMetadata | null>(null);
-
-  /** True while the page is loading initial data. */
   protected readonly isLoading = signal(true);
-
   protected readonly arrowLeftIcon = ArrowLeft;
 
   async ngOnInit(): Promise<void> {
@@ -66,9 +57,21 @@ export class SeriesDetailPageComponent implements OnInit {
     this.progressList.set(progressData);
     this.isLoading.set(false);
 
-    // Fetch metadata in the background without blocking render
+    afterNextRender(() => {
+      this.#scrollToFirstUnread(chaptersData, progressData);
+    }, { injector: this.#injector });
+
     void this.#metadataService.fetchMetadata(seriesData.title).then((fetchedMetadata) => {
       this.metadata.set(fetchedMetadata);
     });
+  }
+
+  #scrollToFirstUnread(chapters: IChapter[], progressList: IReadingProgress[]): void {
+    const completedIds = new Set(progressList.filter((p) => p.isCompleted).map((p) => p.chapterId));
+    const firstUnread = chapters.find((c) => !completedIds.has(c.id));
+    if (!firstUnread) return;
+    document
+      .querySelector(`[data-chapter-id="${firstUnread.id}"]`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }

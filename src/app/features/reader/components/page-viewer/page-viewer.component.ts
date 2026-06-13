@@ -1,5 +1,5 @@
 import {
-  Component, inject, computed, HostListener, ElementRef, viewChild, OnDestroy,
+  Component, inject, computed, signal, effect, HostListener, ElementRef, viewChild, OnDestroy,
 } from '@angular/core';
 import { ReaderStore } from '../../state/reader.store';
 import { ReadingMode } from '../../../../domain/enums/reading-mode.enum';
@@ -26,9 +26,32 @@ export class PageViewerComponent implements OnDestroy {
     }));
   });
 
+  /** CSS class applied to the page image to animate page turns. */
+  protected readonly pageTransitionClass = signal<string>('');
+
   readonly #pointerStartX = { value: 0 };
   readonly #pointerStartY = { value: 0 };
   readonly #SWIPE_THRESHOLD_PX = 40;
+  #prevPageIndex = 0;
+
+  constructor() {
+    effect(() => {
+      const current = this.store.currentPageIndex();
+      const prev = this.#prevPageIndex;
+      if (current === prev) return;
+
+      const goingForward = current > prev;
+      const rtl = this.store.isRightToLeft();
+
+      // Slide in from the appropriate side
+      const fromClass = goingForward
+        ? (rtl ? 'animate-slide-in-right' : 'animate-slide-in-left')
+        : (rtl ? 'animate-slide-in-left' : 'animate-slide-in-right');
+
+      this.pageTransitionClass.set(fromClass);
+      this.#prevPageIndex = current;
+    });
+  }
 
   @HostListener('pointerdown', ['$event'])
   onPointerDown(event: PointerEvent): void {
@@ -41,13 +64,11 @@ export class PageViewerComponent implements OnDestroy {
     const deltaX = event.clientX - this.#pointerStartX.value;
     const deltaY = event.clientY - this.#pointerStartY.value;
 
-    // Only handle horizontal swipes (more X than Y movement)
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > this.#SWIPE_THRESHOLD_PX) {
       this.#handleSwipe(deltaX);
       return;
     }
 
-    // Treat short movements as taps
     if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
       this.#handleTap(event);
     }
@@ -65,9 +86,9 @@ export class PageViewerComponent implements OnDestroy {
     const normalizedX = event.clientX / containerWidth;
 
     if (normalizedX < TAP_ZONE_LEFT_THRESHOLD) {
-      this.#navigateNext();
+      this.store.goToNextPage();
     } else if (normalizedX > TAP_ZONE_RIGHT_THRESHOLD) {
-      this.#navigatePrevious();
+      this.store.goToPreviousPage();
     } else {
       this.store.toggleControls();
     }
@@ -75,25 +96,12 @@ export class PageViewerComponent implements OnDestroy {
 
   #handleSwipe(deltaX: number): void {
     if (this.store.isLongStrip()) return;
-    // In RTL: swipe left (negative deltaX) = go to next page
     if (this.store.isRightToLeft()) {
-      if (deltaX < 0) this.#navigateNext();
-      else this.#navigatePrevious();
+      if (deltaX < 0) this.store.goToNextPage();
+      else this.store.goToPreviousPage();
     } else {
-      if (deltaX > 0) this.#navigateNext();
-      else this.#navigatePrevious();
+      if (deltaX > 0) this.store.goToNextPage();
+      else this.store.goToPreviousPage();
     }
-  }
-
-  #navigateNext(): void {
-    if (this.store.isRightToLeft()) {
-      this.store.goToNextPage();
-    } else {
-      this.store.goToNextPage();
-    }
-  }
-
-  #navigatePrevious(): void {
-    this.store.goToPreviousPage();
   }
 }

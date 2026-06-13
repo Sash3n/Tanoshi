@@ -30,13 +30,12 @@
       }
     </div>
   } @else {
-    <!-- Paged mode: single page display -->
+    <!-- Paged mode: single page with slide transition -->
     @if (store.currentPageBlobUrl()) {
       <img
         [src]="store.currentPageBlobUrl()!"
         [alt]="'Page ' + (store.currentPageIndex() + 1)"
-        class="w-full h-full object-contain"
-        [class.scale-x-[-1]]="false"
+        [class]="'w-full h-full object-contain ' + pageTransitionClass()"
       />
     } @else {
       <div class="flex items-center justify-center h-full">
