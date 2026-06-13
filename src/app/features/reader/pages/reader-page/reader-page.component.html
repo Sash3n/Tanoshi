@@ -1,3 +1,54 @@
-<div class="flex items-center justify-center h-screen text-tanoshi-text-secondary">
-  Reader — coming soon
+<div class="fixed inset-0 bg-black flex flex-col overflow-hidden">
+
+  <!-- Top bar: shown when controls are visible or awaiting file -->
+  @if (store.isControlsVisible() || awaitingFile()) {
+    <div class="flex items-center gap-3 px-4 pt-12 pb-3 bg-gradient-to-b from-black/80 to-transparent absolute top-0 inset-x-0 z-40">
+      <button
+        (click)="onBackNavigation()"
+        class="flex items-center justify-center w-9 h-9 rounded-full"
+        aria-label="Back"
+      >
+        <lucide-icon [img]="arrowLeftIcon" size="22" color="#E8E8E0" />
+      </button>
+      @if (chapter()) {
+        <div class="flex flex-col">
+          <span class="text-[var(--tanoshi-text-primary)] text-sm font-serif truncate max-w-[200px]">
+            Ch.{{ chapter()!.chapterNumber }}
+          </span>
+          <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono">
+            {{ store.currentPageIndex() + 1 }} / {{ store.totalPageCount() }}
+          </span>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- File pick prompt -->
+  @if (awaitingFile()) {
+    <div class="flex flex-col items-center justify-center flex-1 gap-6 px-8">
+      <lucide-icon [img]="folderOpenIcon" size="56" color="var(--tanoshi-text-tertiary)" class="opacity-40" />
+      <div class="text-center flex flex-col gap-2">
+        <h2 class="text-[var(--tanoshi-text-primary)] text-lg font-serif">Open chapter file</h2>
+        <p class="text-[var(--tanoshi-text-secondary)] text-sm">
+          Select the CBZ file for chapter {{ chapter()?.chapterNumber }}
+        </p>
+      </div>
+      <label class="cursor-pointer flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--tanoshi-accent-gold)] text-[#0D0D0D] text-sm font-medium">
+        <lucide-icon [img]="folderOpenIcon" size="16" color="#0D0D0D" />
+        Choose file
+        <input type="file" accept=".cbz,.cbr,.pdf" class="hidden" (change)="onFileSelected($event)" />
+      </label>
+    </div>
+  } @else {
+    <!-- Page viewer fills the screen -->
+    <app-page-viewer class="flex-1 min-h-0" />
+
+    <!-- Gold progress bar at bottom edge -->
+    <app-page-progress-bar />
+
+    <!-- Controls overlay (slide up from bottom) -->
+    @if (store.isControlsVisible()) {
+      <app-reader-controls />
+    }
+  }
 </div>

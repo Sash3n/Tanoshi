@@ -1,0 +1,63 @@
+<!-- Slide-up controls overlay -->
+<div class="fixed inset-x-0 bottom-0 z-50 flex flex-col bg-[var(--tanoshi-bg-elevated)]/95 backdrop-blur-sm border-t border-[var(--tanoshi-border-subtle)] pb-safe">
+
+  <!-- Page scrubber -->
+  <div class="px-4 pt-4 pb-2">
+    <div class="flex items-center gap-3">
+      <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono w-6 text-right shrink-0">
+        {{ store.currentPageIndex() + 1 }}
+      </span>
+      <input
+        type="range"
+        class="flex-1 h-1 appearance-none rounded-full bg-[var(--tanoshi-progress-track)] accent-[var(--tanoshi-accent-gold)] cursor-pointer"
+        [min]="0"
+        [max]="store.totalPageCount() - 1"
+        [value]="store.currentPageIndex()"
+        (input)="onScrubberInput($event)"
+      />
+      <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono w-6 shrink-0">
+        {{ store.totalPageCount() }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Controls row -->
+  <div class="flex items-center justify-between px-6 py-3">
+    <!-- Previous chapter placeholder / prev page -->
+    <button
+      (click)="store.goToPreviousPage()"
+      class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[var(--tanoshi-bg-surface)] transition-colors"
+      aria-label="Previous page"
+    >
+      <lucide-icon [img]="chevronLeftIcon" size="22" color="var(--tanoshi-text-primary)" />
+    </button>
+
+    <!-- Reading mode toggle -->
+    <button
+      (click)="cycleReadingMode()"
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[var(--tanoshi-border-medium)] hover:border-[var(--tanoshi-accent-gold)] transition-colors"
+      aria-label="Cycle reading mode"
+    >
+      <lucide-icon [img]="alignJustifyIcon" size="14" color="var(--tanoshi-text-secondary)" />
+      <span class="text-[var(--tanoshi-text-secondary)] text-xs font-mono">{{ readingModeLabel }}</span>
+    </button>
+
+    <!-- Next page -->
+    <button
+      (click)="store.goToNextPage()"
+      class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[var(--tanoshi-bg-surface)] transition-colors"
+      aria-label="Next page"
+    >
+      <lucide-icon [img]="chevronRightIcon" size="22" color="var(--tanoshi-text-primary)" />
+    </button>
+
+    <!-- Close controls -->
+    <button
+      (click)="store.hideControls()"
+      class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[var(--tanoshi-bg-surface)] transition-colors"
+      aria-label="Close controls"
+    >
+      <lucide-icon [img]="xIcon" size="20" color="var(--tanoshi-text-secondary)" />
+    </button>
+  </div>
+</div>

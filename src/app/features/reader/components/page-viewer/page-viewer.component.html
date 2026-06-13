@@ -1,0 +1,47 @@
+<div
+  #container
+  data-reader-container
+  class="relative w-full h-full overflow-hidden bg-black select-none"
+>
+  @if (store.isLoading()) {
+    <div class="flex items-center justify-center h-full">
+      <div class="w-8 h-8 border-2 border-[var(--tanoshi-accent-gold)] border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  } @else if (store.errorMessage()) {
+    <div class="flex items-center justify-center h-full px-8">
+      <p class="text-red-400 text-sm text-center">{{ store.errorMessage() }}</p>
+    </div>
+  } @else if (store.isLongStrip()) {
+    <!-- Long strip mode: vertical scroll through all pages -->
+    <div class="w-full overflow-y-auto h-full">
+      @for (page of allPages(); track page.index) {
+        @if (page.blobUrl) {
+          <img
+            [src]="page.blobUrl"
+            [alt]="'Page ' + (page.index + 1)"
+            class="w-full block"
+            loading="lazy"
+          />
+        } @else {
+          <div class="w-full aspect-[2/3] bg-[var(--tanoshi-bg-elevated)] flex items-center justify-center">
+            <div class="w-5 h-5 border border-[var(--tanoshi-border-medium)] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        }
+      }
+    </div>
+  } @else {
+    <!-- Paged mode: single page display -->
+    @if (store.currentPageBlobUrl()) {
+      <img
+        [src]="store.currentPageBlobUrl()!"
+        [alt]="'Page ' + (store.currentPageIndex() + 1)"
+        class="w-full h-full object-contain"
+        [class.scale-x-[-1]]="false"
+      />
+    } @else {
+      <div class="flex items-center justify-center h-full">
+        <div class="w-6 h-6 border border-[var(--tanoshi-border-medium)] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }
+  }
+</div>
