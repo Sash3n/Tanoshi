@@ -12,30 +12,39 @@ export class ReadingProgressRepository {
 
   /** Returns all progress records for a series, ordered by lastReadAt descending. */
   async getBySeriesId(seriesId: string): Promise<IReadingProgress[]> {
-    return tanoshiDb.readingProgress
+    const records = await tanoshiDb.readingProgress
       .where('seriesId')
       .equals(seriesId)
-      .reverse()
-      .sortBy('lastReadAt');
-  }
-
-  /** Creates or updates the progress record for a chapter (upsert by chapterId). */
-  async upsert(progressData: Omit<IReadingProgress, 'id'> & { id?: string }): Promise<void> {
-    const existing = await this.getByChapterId(progressData.chapterId);
-    if (existing) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await tanoshiDb.readingProgress.update(existing.id, progressData as any);
-    } else {
-      await tanoshiDb.readingProgress.add({
-        ...progressData,
-        id: crypto.randomUUID(),
-      } as IReadingProgress);
-    }
+      .toArray();
+    return records.sort((a, b) => b.lastReadAt.getTime() - a.lastReadAt.getTime());
   }
 
   /** Returns all progress records across all series, ordered by lastReadAt descending. */
   async getAll(): Promise<IReadingProgress[]> {
-    return tanoshiDb.readingProgress.orderBy('lastReadAt').reverse().toArray();
+    const records = await tanoshiDb.readingProgress.toArray();
+    return records.sort((a, b) => b.lastReadAt.getTime() - a.lastReadAt.getTime());
+  }
+
+  /**
+   * Creates or updates the progress record for a chapter (upsert by chapterId).
+   * Wrapped in a read-write transaction to prevent duplicate rows from concurrent saves.
+   */
+  async upsert(progressData: Omit<IReadingProgress, 'id'> & { id?: string }): Promise<void> {
+    await tanoshiDb.transaction('rw', tanoshiDb.readingProgress, async () => {
+      const existing = await tanoshiDb.readingProgress
+        .where('chapterId')
+        .equals(progressData.chapterId)
+        .first();
+      if (existing) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await tanoshiDb.readingProgress.update(existing.id, progressData as any);
+      } else {
+        await tanoshiDb.readingProgress.add({
+          ...progressData,
+          id: crypto.randomUUID(),
+        } as IReadingProgress);
+      }
+    });
   }
 
   /** Deletes all progress records for a series. */
