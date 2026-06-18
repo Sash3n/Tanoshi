@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { LucideAngularModule, ArrowLeft, BookOpen, Palette, HardDrive, Library, CheckCircle, Loader, BarChart2 } from 'lucide-angular';
 import { SettingsStore } from '../../state/settings.store';
@@ -11,8 +11,9 @@ import { ReadingStatsComponent } from '../../components/reading-stats/reading-st
   imports: [LucideAngularModule, ReadingStatsComponent],
   templateUrl: './settings-page.component.html',
 })
-export class SettingsPageComponent {
+export class SettingsPageComponent implements OnDestroy {
   readonly #router = inject(Router);
+  #cacheClearedTimer: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly store = inject(SettingsStore);
   protected readonly ReadingMode = ReadingMode;
@@ -40,6 +41,12 @@ export class SettingsPageComponent {
   protected readonly isClearingCache = signal(false);
   protected readonly cacheCleared = signal(false);
 
+  ngOnDestroy(): void {
+    if (this.#cacheClearedTimer !== null) {
+      clearTimeout(this.#cacheClearedTimer);
+    }
+  }
+
   protected onBack(): void {
     void this.#router.navigate(['/library']);
   }
@@ -50,11 +57,15 @@ export class SettingsPageComponent {
 
   protected async onClearCache(): Promise<void> {
     if (this.isClearingCache()) return;
+    if (this.#cacheClearedTimer !== null) clearTimeout(this.#cacheClearedTimer);
     this.isClearingCache.set(true);
     this.cacheCleared.set(false);
     await this.store.clearMetadataCache();
     this.isClearingCache.set(false);
     this.cacheCleared.set(true);
-    setTimeout(() => this.cacheCleared.set(false), 3000);
+    this.#cacheClearedTimer = setTimeout(() => {
+      this.cacheCleared.set(false);
+      this.#cacheClearedTimer = null;
+    }, 3000);
   }
 }
