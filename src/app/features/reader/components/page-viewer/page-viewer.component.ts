@@ -1,9 +1,12 @@
 import {
-  Component, inject, computed, signal, effect, HostListener, ElementRef, viewChild, OnDestroy,
+  Component, inject, computed, signal, effect, HostListener,
 } from '@angular/core';
 import { ReaderStore } from '../../state/reader.store';
-import { ReadingMode } from '../../../../domain/enums/reading-mode.enum';
-import { TAP_ZONE_LEFT_THRESHOLD, TAP_ZONE_RIGHT_THRESHOLD } from '../../../../core/constants/reader.constants';
+import {
+  TAP_ZONE_LEFT_THRESHOLD,
+  TAP_ZONE_RIGHT_THRESHOLD,
+  SWIPE_THRESHOLD_PX,
+} from '../../../../core/constants/reader.constants';
 
 @Component({
   selector: 'app-page-viewer',
@@ -11,10 +14,8 @@ import { TAP_ZONE_LEFT_THRESHOLD, TAP_ZONE_RIGHT_THRESHOLD } from '../../../../c
   templateUrl: './page-viewer.component.html',
   host: { class: 'block w-full h-full' },
 })
-export class PageViewerComponent implements OnDestroy {
+export class PageViewerComponent {
   protected readonly store = inject(ReaderStore);
-
-  protected readonly containerRef = viewChild.required<ElementRef<HTMLElement>>('container');
 
   /** Sorted loaded pages for long-strip mode. */
   protected readonly allPages = computed(() => {
@@ -26,12 +27,11 @@ export class PageViewerComponent implements OnDestroy {
     }));
   });
 
-  /** CSS class applied to the page image to animate page turns. */
+  /** CSS animation class applied to the page image on page turn. */
   protected readonly pageTransitionClass = signal<string>('');
 
   readonly #pointerStartX = { value: 0 };
   readonly #pointerStartY = { value: 0 };
-  readonly #SWIPE_THRESHOLD_PX = 40;
   #prevPageIndex = 0;
 
   constructor() {
@@ -42,8 +42,6 @@ export class PageViewerComponent implements OnDestroy {
 
       const goingForward = current > prev;
       const rtl = this.store.isRightToLeft();
-
-      // Slide in from the appropriate side
       const fromClass = goingForward
         ? (rtl ? 'animate-slide-in-right' : 'animate-slide-in-left')
         : (rtl ? 'animate-slide-in-left' : 'animate-slide-in-right');
@@ -64,7 +62,7 @@ export class PageViewerComponent implements OnDestroy {
     const deltaX = event.clientX - this.#pointerStartX.value;
     const deltaY = event.clientY - this.#pointerStartY.value;
 
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > this.#SWIPE_THRESHOLD_PX) {
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_THRESHOLD_PX) {
       this.#handleSwipe(deltaX);
       return;
     }
@@ -74,21 +72,22 @@ export class PageViewerComponent implements OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    // Blob URLs are cleaned up by the store on closeChapter
-  }
-
   #handleTap(event: PointerEvent): void {
     if (this.store.isLongStrip()) return;
 
-    const containerWidth = (event.target as HTMLElement).closest('[data-reader-container]')?.clientWidth
+    const containerWidth =
+      (event.target as HTMLElement).closest('[data-reader-container]')?.clientWidth
       ?? window.innerWidth;
     const normalizedX = event.clientX / containerWidth;
 
+    const rtl = this.store.isRightToLeft();
+
     if (normalizedX < TAP_ZONE_LEFT_THRESHOLD) {
-      this.store.goToNextPage();
+      // Left zone: previous page in RTL (manga), next page in LTR (comics)
+      if (rtl) this.store.goToPreviousPage(); else this.store.goToNextPage();
     } else if (normalizedX > TAP_ZONE_RIGHT_THRESHOLD) {
-      this.store.goToPreviousPage();
+      // Right zone: next page in RTL, previous page in LTR
+      if (rtl) this.store.goToNextPage(); else this.store.goToPreviousPage();
     } else {
       this.store.toggleControls();
     }
@@ -96,12 +95,13 @@ export class PageViewerComponent implements OnDestroy {
 
   #handleSwipe(deltaX: number): void {
     if (this.store.isLongStrip()) return;
+    // RTL: swipe left (negative deltaX) turns to next page (further into the manga)
     if (this.store.isRightToLeft()) {
       if (deltaX < 0) this.store.goToNextPage();
       else this.store.goToPreviousPage();
     } else {
-      if (deltaX > 0) this.store.goToNextPage();
-      else this.store.goToPreviousPage();
+      if (deltaX > 0) this.store.goToPreviousPage();
+      else this.store.goToNextPage();
     }
   }
 }

@@ -10,6 +10,8 @@ import {
   DEFAULT_PRELOAD_PAGES_AHEAD,
   DEFAULT_PRELOAD_PAGES_BEHIND,
   PROGRESS_SAVE_INTERVAL_PAGES,
+  PAGE_FILTERS,
+  type PageFilter,
 } from '../../../core/constants/reader.constants';
 
 /** A loaded page ready for display. */
@@ -56,7 +58,7 @@ export class ReaderStore {
   readonly lastSavedPageIndex = signal<number>(0);
 
   /** Active visual filter applied to page images. */
-  readonly pageFilter = signal<'none' | 'sepia' | 'greyscale' | 'inverted'>('none');
+  readonly pageFilter = signal<PageFilter>('none');
 
   /** The blob URL for the currently displayed page, or null if not yet loaded. */
   readonly currentPageBlobUrl = computed(() => {
@@ -88,6 +90,8 @@ export class ReaderStore {
   async openChapter(chapterId: string, sourceFile: File): Promise<void> {
     this.isLoading.set(true);
     this.errorMessage.set(null);
+    // Revoke any blob URLs from a previously open chapter before discarding the map
+    this.loadedPages().forEach((url) => URL.revokeObjectURL(url));
     this.loadedPages.set(new Map());
     this.currentPageIndex.set(0);
 
@@ -188,9 +192,8 @@ export class ReaderStore {
 
   /** Cycles through page filter modes: none → sepia → greyscale → inverted → none. */
   cyclePageFilter(): void {
-    const order = ['none', 'sepia', 'greyscale', 'inverted'] as const;
     const current = this.pageFilter();
-    const next = order[(order.indexOf(current) + 1) % order.length];
+    const next = PAGE_FILTERS[(PAGE_FILTERS.indexOf(current) + 1) % PAGE_FILTERS.length];
     this.pageFilter.set(next);
   }
 
