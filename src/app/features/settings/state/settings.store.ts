@@ -1,4 +1,5 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
+import { Injectable, signal, computed, effect, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { ReadingMode } from '../../../domain/enums/reading-mode.enum';
 import { tanoshiDb } from '../../../data/database/tanoshi-db';
 import {
@@ -15,6 +16,11 @@ interface IPersistedSettings {
   readonly accentColor: AccentColor;
 }
 
+const DEFAULT_SETTINGS: IPersistedSettings = {
+  defaultReadingMode: DEFAULT_SETTINGS_READING_MODE,
+  accentColor: DEFAULT_ACCENT_COLOR,
+};
+
 function loadPersistedSettings(): IPersistedSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
@@ -22,17 +28,20 @@ function loadPersistedSettings(): IPersistedSettings {
   } catch {
     // corrupt storage — fall through to defaults
   }
-  return { defaultReadingMode: DEFAULT_SETTINGS_READING_MODE, accentColor: DEFAULT_ACCENT_COLOR };
+  return DEFAULT_SETTINGS;
 }
 
 @Injectable({ providedIn: 'root' })
 export class SettingsStore {
-  readonly defaultReadingMode = signal<ReadingMode>(loadPersistedSettings().defaultReadingMode);
-  readonly accentColor = signal<AccentColor>(loadPersistedSettings().accentColor);
+  readonly #isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  /** Estimated storage used in bytes (null while loading). */
+  // Load once and destructure — avoids two localStorage.getItem calls
+  readonly #persisted = this.#isBrowser ? loadPersistedSettings() : DEFAULT_SETTINGS;
+
+  readonly defaultReadingMode = signal<ReadingMode>(this.#persisted.defaultReadingMode);
+  readonly accentColor = signal<AccentColor>(this.#persisted.accentColor);
+
   readonly storageUsedBytes = signal<number | null>(null);
-  /** Estimated storage quota in bytes (null while loading). */
   readonly storageQuotaBytes = signal<number | null>(null);
 
   readonly storageUsedMB = computed(() => {
@@ -53,7 +62,8 @@ export class SettingsStore {
   });
 
   constructor() {
-    // Persist on every change
+    if (!this.#isBrowser) return;
+
     effect(() => {
       const settings: IPersistedSettings = {
         defaultReadingMode: this.defaultReadingMode(),
@@ -66,7 +76,6 @@ export class SettingsStore {
       }
     });
 
-    // Apply accent colour to the root CSS variable
     effect(() => {
       const color = this.accentColor();
       document.documentElement.style.setProperty('--tanoshi-accent-gold', ACCENT_COLOR_VALUES[color]);
