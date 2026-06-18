@@ -197,23 +197,6 @@ export class ReaderStore {
     this.pageFilter.set(next);
   }
 
-  /** Determines the tap action for a normalised X position (0–1). */
-  resolveTapAction(normalizedX: number): 'next' | 'previous' | 'toggle-controls' {
-    if (normalizedX < 0.33) return 'next';
-    if (normalizedX > 0.66) return 'previous';
-    return 'toggle-controls';
-  }
-
-  /** Returns the preload range of page indices around the current page. */
-  getPreloadRange(): { start: number; end: number } {
-    const current = this.currentPageIndex();
-    const total = this.totalPageCount();
-    return {
-      start: Math.max(0, current - DEFAULT_PRELOAD_PAGES_BEHIND),
-      end: Math.min(total - 1, current + DEFAULT_PRELOAD_PAGES_AHEAD),
-    };
-  }
-
   #maybeSaveProgress(): void {
     const current = this.currentPageIndex();
     const lastSaved = this.lastSavedPageIndex();

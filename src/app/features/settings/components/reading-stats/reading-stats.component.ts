@@ -1,7 +1,6 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { LucideAngularModule, BookOpen, CheckCircle, Library, Clock } from 'lucide-angular';
 import { ReadingProgressRepository } from '../../../../data/repositories/reading-progress.repository';
-import { SeriesRepository } from '../../../../data/repositories/series.repository';
 
 interface IStats {
   readonly totalPagesRead: number;
@@ -20,7 +19,6 @@ const AVG_SECONDS_PER_PAGE = 12;
 })
 export class ReadingStatsComponent implements OnInit {
   readonly #progressRepository = inject(ReadingProgressRepository);
-  readonly #seriesRepository = inject(SeriesRepository);
 
   protected readonly stats = signal<IStats | null>(null);
 
@@ -41,10 +39,7 @@ export class ReadingStatsComponent implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    const [allProgress, allSeries] = await Promise.all([
-      this.#progressRepository.getAll(),
-      this.#seriesRepository.getAll(),
-    ]);
+    const allProgress = await this.#progressRepository.getAll();
 
     const totalPagesRead = allProgress.reduce((sum, p) => sum + p.currentPageIndex, 0);
     const chaptersCompleted = allProgress.filter((p) => p.isCompleted).length;
