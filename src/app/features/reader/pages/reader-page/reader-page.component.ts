@@ -42,13 +42,8 @@ export class ReaderPageComponent implements OnInit, OnDestroy {
   protected readonly arrowLeftIcon = ArrowLeft;
   protected readonly folderOpenIcon = FolderOpen;
 
-  /** The chapter record fetched from DB (used for back navigation). */
   protected readonly chapter = signal<IChapter | null>(null);
-
-  /** True when we're waiting for the user to pick the chapter file. */
   protected readonly awaitingFile = signal(false);
-
-  /** The chapter id from the route, cached for file-pick use. */
   protected chapterId = '';
 
   async ngOnInit(): Promise<void> {
@@ -69,12 +64,13 @@ export class ReaderPageComponent implements OnInit, OnDestroy {
     this.awaitingFile.set(true);
   }
 
-  async ngOnDestroy(): Promise<void> {
+  // Angular does not await ngOnDestroy — kick off fire-and-forget cleanup
+  // so progress is saved and blob URLs are released without blocking teardown.
+  ngOnDestroy(): void {
     void setImmersiveMode(false);
-    await this.store.closeChapter();
+    void this.store.closeChapter();
   }
 
-  /** Called when the user picks the CBZ file for this chapter. */
   async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
