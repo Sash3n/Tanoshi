@@ -3,8 +3,10 @@ import { ReadingMode } from '../../../domain/enums/reading-mode.enum';
 import { ReadingDirection } from '../../../domain/enums/reading-direction.enum';
 import { ReadingProgressRepository } from '../../../data/repositories/reading-progress.repository';
 import { ChapterRepository } from '../../../data/repositories/chapter.repository';
+import { BookmarkRepository } from '../../../data/repositories/bookmark.repository';
 import { CbzExtractorService } from '../../../core/services/cbz-extractor.service';
 import type { IChapter } from '../../../domain/models/chapter.model';
+import type { IBookmark } from '../../../domain/models/bookmark.model';
 import {
   DEFAULT_READING_MODE,
   DEFAULT_PRELOAD_PAGES_AHEAD,
@@ -28,6 +30,7 @@ export interface ILoadedPage {
 export class ReaderStore {
   readonly #progressRepository = inject(ReadingProgressRepository);
   readonly #chapterRepository = inject(ChapterRepository);
+  readonly #bookmarkRepository = inject(BookmarkRepository);
   readonly #cbzExtractor = inject(CbzExtractorService);
 
   /** The chapter currently open in the reader. */
@@ -59,6 +62,14 @@ export class ReaderStore {
 
   /** Active visual filter applied to page images. */
   readonly pageFilter = signal<PageFilter>('none');
+
+  /** Bookmarks for the chapter currently open. */
+  readonly bookmarks = signal<IBookmark[]>([]);
+
+  /** True when the page currently displayed has a bookmark. */
+  readonly isCurrentPageBookmarked = computed(() =>
+    this.bookmarks().some((b) => b.pageIndex === this.currentPageIndex()),
+  );
 
   /** The blob URL for the currently displayed page, or null if not yet loaded. */
   readonly currentPageBlobUrl = computed(() => {
@@ -102,6 +113,7 @@ export class ReaderStore {
       return;
     }
     this.currentChapter.set(chapter);
+    this.bookmarks.set(await this.#bookmarkRepository.getByChapterId(chapterId));
 
     const savedProgress = await this.#progressRepository.getByChapterId(chapterId);
     const startPage = savedProgress?.currentPageIndex ?? 0;
@@ -188,6 +200,37 @@ export class ReaderStore {
     this.loadedPages().forEach((url) => URL.revokeObjectURL(url));
     this.loadedPages.set(new Map());
     this.currentChapter.set(null);
+    this.bookmarks.set([]);
+  }
+
+  /**
+   * Toggles a bookmark on the current page: removes it if one exists,
+   * otherwise creates one.
+   */
+  async toggleBookmark(): Promise<void> {
+    const chapter = this.currentChapter();
+    if (!chapter) return;
+
+    const pageIndex = this.currentPageIndex();
+    const existing = this.bookmarks().find((b) => b.pageIndex === pageIndex);
+
+    if (existing) {
+      await this.#bookmarkRepository.delete(existing.id);
+      this.bookmarks.update((list) => list.filter((b) => b.id !== existing.id));
+      return;
+    }
+
+    const newId = await this.#bookmarkRepository.create({
+      chapterId: chapter.id,
+      seriesId: chapter.seriesId,
+      pageIndex,
+      note: null,
+      createdAt: new Date(),
+    });
+    this.bookmarks.update((list) => [
+      ...list,
+      { id: newId, chapterId: chapter.id, seriesId: chapter.seriesId, pageIndex, note: null, createdAt: new Date() },
+    ]);
   }
 
   /** Cycles through page filter modes: none → sepia → greyscale → inverted → none. */
