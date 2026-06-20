@@ -80,9 +80,10 @@ export class ReaderPageComponent implements OnInit, OnDestroy {
 
     // A ?page= query param (e.g. from a bookmark link) overrides the
     // last-read page that openChapter restores by default.
-    const requestedPage = this.#route.snapshot.queryParamMap.get('page');
-    if (requestedPage !== null) {
-      this.store.goToPage(Number(requestedPage));
+    const rawPage = this.#route.snapshot.queryParamMap.get('page');
+    const requestedPage = rawPage !== null ? Number(rawPage) : null;
+    if (requestedPage !== null && Number.isFinite(requestedPage)) {
+      this.store.goToPage(requestedPage);
     }
   }
 
