@@ -65,6 +65,38 @@
       (submitTagName)="onSubmitTagName($event)"
     />
 
+    <!-- Add to collection -->
+    <div class="px-4 pb-2 relative">
+      <button
+        type="button"
+        (click)="toggleCollectionMenu()"
+        class="flex items-center gap-1.5 px-2 py-1 rounded-md border border-[var(--tanoshi-border-medium)] text-[var(--tanoshi-text-tertiary)] hover:border-[var(--tanoshi-accent-gold)] transition-colors text-[10px] font-mono"
+      >
+        <lucide-icon [img]="folderIcon" size="12" />
+        Add to collection
+      </button>
+
+      @if (isCollectionMenuOpen()) {
+        <div class="absolute left-4 top-full mt-1 z-10 w-48 rounded-md bg-[var(--tanoshi-bg-elevated)] border border-[var(--tanoshi-border-subtle)] shadow-lg py-1">
+          @if (collectionsStore.collections().length === 0) {
+            <p class="px-3 py-2 text-[var(--tanoshi-text-tertiary)] text-xs">No collections yet.</p>
+          }
+          @for (collection of collectionsStore.collections(); track collection.id) {
+            <button
+              type="button"
+              (click)="onToggleCollectionMembership(collection.id)"
+              class="w-full flex items-center justify-between px-3 py-2 hover:bg-[var(--tanoshi-bg-surface)] text-left"
+            >
+              <span class="text-[var(--tanoshi-text-secondary)] text-xs">{{ collection.name }}</span>
+              @if (isInCollection(collection.id)) {
+                <lucide-icon [img]="checkIcon" size="14" color="var(--tanoshi-accent-gold)" />
+              }
+            </button>
+          }
+        </div>
+      }
+    </div>
+
     <!-- Bookmarks -->
     @if (bookmarks().length > 0) {
       <div class="px-4 py-2 flex items-center border-t border-[var(--tanoshi-border-subtle)]">

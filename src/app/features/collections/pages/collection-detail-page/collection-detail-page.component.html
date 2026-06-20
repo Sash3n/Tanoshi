@@ -1,0 +1,55 @@
+@if (isLoading()) {
+  <div class="flex items-center justify-center h-screen bg-[var(--tanoshi-bg-base)]">
+    <div class="w-6 h-6 border-2 border-[var(--tanoshi-accent-gold)] border-t-transparent rounded-full animate-spin"></div>
+  </div>
+} @else if (collection()) {
+  <div class="min-h-screen bg-[var(--tanoshi-bg-base)] flex flex-col pb-20">
+    <header class="px-4 pt-12 pb-3 flex items-center gap-3">
+      <button [routerLink]="['/collections']" aria-label="Back to collections">
+        <lucide-icon [img]="arrowLeftIcon" size="20" color="var(--tanoshi-text-primary)" />
+      </button>
+      <h1 class="text-[var(--tanoshi-text-primary)] text-xl font-serif tracking-wide">
+        {{ collection()!.name }}
+      </h1>
+    </header>
+
+    <main class="flex-1 px-4">
+      @if (seriesList().length === 0) {
+        <div class="flex flex-col items-center justify-center py-24 text-center">
+          <p class="text-[var(--tanoshi-text-secondary)] text-sm">
+            No series in this collection yet.
+          </p>
+        </div>
+      } @else {
+        <div class="grid grid-cols-3 gap-3">
+          @for (series of seriesList(); track series.id) {
+            <div class="relative flex flex-col rounded-lg overflow-hidden bg-[var(--tanoshi-bg-surface)] border border-[var(--tanoshi-border-subtle)]">
+              <a [routerLink]="['/series', series.id]" class="block aspect-[2/3] overflow-hidden bg-[var(--tanoshi-bg-elevated)]">
+                @if (series.coverImageBase64) {
+                  <img [src]="series.coverImageBase64!" [alt]="series.title" class="w-full h-full object-cover" />
+                } @else {
+                  <div class="w-full h-full flex items-center justify-center">
+                    <span class="text-[var(--tanoshi-text-tertiary)] text-xs text-center px-2 font-mono">
+                      {{ series.title }}
+                    </span>
+                  </div>
+                }
+              </a>
+              <button
+                type="button"
+                (click)="onRemoveSeries(series.id)"
+                [attr.aria-label]="'Remove ' + series.title + ' from collection'"
+                class="absolute top-2 right-2 p-1 rounded-full bg-black/40 hover:bg-black/60"
+              >
+                <lucide-icon [img]="xIcon" size="14" color="white" />
+              </button>
+              <p class="px-2 py-1.5 text-[var(--tanoshi-text-primary)] text-xs font-medium leading-tight line-clamp-2 font-serif">
+                {{ series.title }}
+              </p>
+            </div>
+          }
+        </div>
+      }
+    </main>
+  </div>
+}

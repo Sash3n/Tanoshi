@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit, afterNextRender, Injector } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { LucideAngularModule, ArrowLeft, Star } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, Star, FolderHeart, Check } from 'lucide-angular';
 import { SeriesRepository } from '../../../../data/repositories/series.repository';
 import { ChapterRepository } from '../../../../data/repositories/chapter.repository';
 import { ReadingProgressRepository } from '../../../../data/repositories/reading-progress.repository';
@@ -8,6 +8,7 @@ import { BookmarkRepository } from '../../../../data/repositories/bookmark.repos
 import { TagRepository } from '../../../../data/repositories/tag.repository';
 import { MetadataService } from '../../../../core/services/metadata.service';
 import { TAG_COLOR_PALETTE } from '../../../../core/constants/tag.constants';
+import { CollectionsStore } from '../../../collections/state/collections.store';
 import { ChapterListComponent } from '../../components/chapter-list/chapter-list.component';
 import { SeriesMetadataCardComponent } from '../../components/series-metadata-card/series-metadata-card.component';
 import { BookmarksListComponent } from '../../components/bookmarks-list/bookmarks-list.component';
@@ -42,6 +43,7 @@ export class SeriesDetailPageComponent implements OnInit {
   readonly #tagRepository = inject(TagRepository);
   readonly #metadataService = inject(MetadataService);
   readonly #injector = inject(Injector);
+  protected readonly collectionsStore = inject(CollectionsStore);
 
   protected readonly series = signal<ISeries | null>(null);
   protected readonly chapters = signal<IChapter[]>([]);
@@ -50,8 +52,11 @@ export class SeriesDetailPageComponent implements OnInit {
   protected readonly allTags = signal<ITag[]>([]);
   protected readonly metadata = signal<ISeriesMetadata | null>(null);
   protected readonly isLoading = signal(true);
+  protected readonly isCollectionMenuOpen = signal(false);
   protected readonly arrowLeftIcon = ArrowLeft;
   protected readonly starIcon = Star;
+  protected readonly folderIcon = FolderHeart;
+  protected readonly checkIcon = Check;
 
   async ngOnInit(): Promise<void> {
     const seriesId = this.#route.snapshot.paramMap.get('id');
@@ -66,6 +71,7 @@ export class SeriesDetailPageComponent implements OnInit {
       this.#progressRepository.getBySeriesId(seriesId),
       this.#bookmarkRepository.getBySeriesId(seriesId),
       this.#tagRepository.getAll(),
+      this.collectionsStore.loadCollections(),
     ]);
 
     if (!seriesData) {
@@ -133,6 +139,27 @@ export class SeriesDetailPageComponent implements OnInit {
     if (current.tagIds.includes(tagId)) return;
     await this.#seriesRepository.addTag(current.id, tagId);
     this.series.set({ ...current, tagIds: [...current.tagIds, tagId] });
+  }
+
+  protected toggleCollectionMenu(): void {
+    this.isCollectionMenuOpen.update((open) => !open);
+  }
+
+  protected isInCollection(collectionId: string): boolean {
+    const current = this.series();
+    if (!current) return false;
+    const collection = this.collectionsStore.collections().find((c) => c.id === collectionId);
+    return collection?.seriesIds.includes(current.id) ?? false;
+  }
+
+  protected async onToggleCollectionMembership(collectionId: string): Promise<void> {
+    const current = this.series();
+    if (!current) return;
+    if (this.isInCollection(collectionId)) {
+      await this.collectionsStore.removeSeriesFromCollection(collectionId, current.id);
+    } else {
+      await this.collectionsStore.addSeriesToCollection(collectionId, current.id);
+    }
   }
 
   #scrollToFirstUnread(chapters: IChapter[], progressList: IReadingProgress[]): void {

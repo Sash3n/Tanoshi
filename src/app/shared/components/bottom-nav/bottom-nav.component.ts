@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule, Library, Settings } from 'lucide-angular';
+import { LucideAngularModule, Library, FolderHeart, Settings } from 'lucide-angular';
 import { SettingsStore } from '../../../features/settings/state/settings.store';
 
 @Component({
@@ -12,5 +12,6 @@ import { SettingsStore } from '../../../features/settings/state/settings.store';
 export class BottomNavComponent {
   protected readonly settingsStore = inject(SettingsStore);
   protected readonly libraryIcon = Library;
+  protected readonly collectionsIcon = FolderHeart;
   protected readonly settingsIcon = Settings;
 }

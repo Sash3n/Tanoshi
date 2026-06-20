@@ -28,6 +28,20 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'collections',
+    loadComponent: () =>
+      import('./features/collections/pages/collections-page/collections-page.component').then(
+        (m) => m.CollectionsPageComponent,
+      ),
+  },
+  {
+    path: 'collections/:id',
+    loadComponent: () =>
+      import(
+        './features/collections/pages/collection-detail-page/collection-detail-page.component'
+      ).then((m) => m.CollectionDetailPageComponent),
+  },
+  {
     path: 'settings',
     loadComponent: () =>
       import('./features/settings/pages/settings-page/settings-page.component').then(
