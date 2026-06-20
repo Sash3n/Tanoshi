@@ -5,6 +5,11 @@ import type { IBookmark } from '../../domain/models/bookmark.model';
 /** Provides all CRUD operations for the bookmarks table. */
 @Injectable({ providedIn: 'root' })
 export class BookmarkRepository {
+  /** Returns every bookmark in the database. */
+  async getAll(): Promise<IBookmark[]> {
+    return tanoshiDb.bookmarks.toArray();
+  }
+
   /** Returns all bookmarks for a chapter, ordered by page index ascending. */
   async getByChapterId(chapterId: string): Promise<IBookmark[]> {
     const records = await tanoshiDb.bookmarks.where('chapterId').equals(chapterId).toArray();

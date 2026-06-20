@@ -5,6 +5,11 @@ import type { IChapter } from '../../domain/models/chapter.model';
 /** Provides all CRUD operations for the chapters table. */
 @Injectable({ providedIn: 'root' })
 export class ChapterRepository {
+  /** Returns every chapter in the database. */
+  async getAll(): Promise<IChapter[]> {
+    return tanoshiDb.chapters.toArray();
+  }
+
   /** Returns all chapters belonging to a series, sorted by chapter number ascending. */
   async getBySeriesId(seriesId: string): Promise<IChapter[]> {
     return tanoshiDb.chapters
