@@ -26,6 +26,20 @@
         <lucide-icon [img]="arrowLeftIcon" size="20" />
       </button>
 
+      <!-- Favorite toggle -->
+      <button
+        type="button"
+        (click)="onToggleFavorite()"
+        [attr.aria-label]="series()!.isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+        class="absolute top-12 right-4 flex items-center justify-center w-9 h-9 rounded-full bg-black/40"
+      >
+        <lucide-icon
+          [img]="starIcon"
+          size="20"
+          [class]="series()!.isFavorite ? 'fill-[var(--tanoshi-accent-gold)] text-[var(--tanoshi-accent-gold)]' : 'text-[var(--tanoshi-text-primary)]'"
+        />
+      </button>
+
       <!-- Title overlay -->
       <div class="absolute bottom-0 left-0 right-0 px-4 pb-4">
         <h1 class="text-[var(--tanoshi-text-primary)] text-2xl font-serif leading-tight">
@@ -42,6 +56,20 @@
       [series]="series()!"
       [metadata]="metadata()"
     />
+
+    <!-- Bookmarks -->
+    @if (bookmarks().length > 0) {
+      <div class="px-4 py-2 flex items-center border-t border-[var(--tanoshi-border-subtle)]">
+        <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono uppercase tracking-widest">
+          Bookmarks
+        </span>
+      </div>
+      <app-bookmarks-list
+        [bookmarks]="bookmarks()"
+        [chapters]="chapters()"
+        (removeBookmark)="onRemoveBookmark($event)"
+      />
+    }
 
     <!-- Chapter list header -->
     <div class="px-4 py-2 flex items-center border-t border-[var(--tanoshi-border-subtle)]">

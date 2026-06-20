@@ -15,7 +15,7 @@ const MOCK_SERIES: ISeries = {
   id: 's1', title: 'One Punch Man', alternativeTitles: [], coverImageBase64: null,
   totalChapterCount: 10, fileFormat: FileFormat.CBZ, localFilePath: 'opm.cbz',
   anilistId: null, mangaDexId: null, genres: [], synopsis: null, author: null, artist: null,
-  createdAt: NOW, updatedAt: NOW,
+  isFavorite: false, createdAt: NOW, updatedAt: NOW,
 };
 
 const MOCK_CHAPTER: IChapter = {

@@ -1,21 +1,30 @@
 import { Component, inject, signal, OnInit, afterNextRender, Injector } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { LucideAngularModule, ArrowLeft } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, Star } from 'lucide-angular';
 import { SeriesRepository } from '../../../../data/repositories/series.repository';
 import { ChapterRepository } from '../../../../data/repositories/chapter.repository';
 import { ReadingProgressRepository } from '../../../../data/repositories/reading-progress.repository';
+import { BookmarkRepository } from '../../../../data/repositories/bookmark.repository';
 import { MetadataService } from '../../../../core/services/metadata.service';
 import { ChapterListComponent } from '../../components/chapter-list/chapter-list.component';
 import { SeriesMetadataCardComponent } from '../../components/series-metadata-card/series-metadata-card.component';
+import { BookmarksListComponent } from '../../components/bookmarks-list/bookmarks-list.component';
 import type { ISeries } from '../../../../domain/models/series.model';
 import type { IChapter } from '../../../../domain/models/chapter.model';
 import type { IReadingProgress } from '../../../../domain/models/reading-progress.model';
+import type { IBookmark } from '../../../../domain/models/bookmark.model';
 import type { ISeriesMetadata } from '../../../../domain/models/metadata.model';
 
 @Component({
   selector: 'app-series-detail-page',
   standalone: true,
-  imports: [RouterLink, LucideAngularModule, ChapterListComponent, SeriesMetadataCardComponent],
+  imports: [
+    RouterLink,
+    LucideAngularModule,
+    ChapterListComponent,
+    SeriesMetadataCardComponent,
+    BookmarksListComponent,
+  ],
   templateUrl: './series-detail-page.component.html',
 })
 export class SeriesDetailPageComponent implements OnInit {
@@ -24,15 +33,18 @@ export class SeriesDetailPageComponent implements OnInit {
   readonly #seriesRepository = inject(SeriesRepository);
   readonly #chapterRepository = inject(ChapterRepository);
   readonly #progressRepository = inject(ReadingProgressRepository);
+  readonly #bookmarkRepository = inject(BookmarkRepository);
   readonly #metadataService = inject(MetadataService);
   readonly #injector = inject(Injector);
 
   protected readonly series = signal<ISeries | null>(null);
   protected readonly chapters = signal<IChapter[]>([]);
   protected readonly progressList = signal<IReadingProgress[]>([]);
+  protected readonly bookmarks = signal<IBookmark[]>([]);
   protected readonly metadata = signal<ISeriesMetadata | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly arrowLeftIcon = ArrowLeft;
+  protected readonly starIcon = Star;
 
   async ngOnInit(): Promise<void> {
     const seriesId = this.#route.snapshot.paramMap.get('id');
@@ -41,10 +53,11 @@ export class SeriesDetailPageComponent implements OnInit {
       return;
     }
 
-    const [seriesData, chaptersData, progressData] = await Promise.all([
+    const [seriesData, chaptersData, progressData, bookmarksData] = await Promise.all([
       this.#seriesRepository.getById(seriesId),
       this.#chapterRepository.getBySeriesId(seriesId),
       this.#progressRepository.getBySeriesId(seriesId),
+      this.#bookmarkRepository.getBySeriesId(seriesId),
     ]);
 
     if (!seriesData) {
@@ -55,6 +68,7 @@ export class SeriesDetailPageComponent implements OnInit {
     this.series.set(seriesData);
     this.chapters.set(chaptersData);
     this.progressList.set(progressData);
+    this.bookmarks.set(bookmarksData);
     this.isLoading.set(false);
 
     afterNextRender(() => {
@@ -64,6 +78,18 @@ export class SeriesDetailPageComponent implements OnInit {
     void this.#metadataService.fetchMetadata(seriesData.title).then((fetchedMetadata) => {
       this.metadata.set(fetchedMetadata);
     });
+  }
+
+  protected async onToggleFavorite(): Promise<void> {
+    const current = this.series();
+    if (!current) return;
+    const nextValue = await this.#seriesRepository.toggleFavorite(current.id);
+    this.series.set({ ...current, isFavorite: nextValue });
+  }
+
+  protected async onRemoveBookmark(bookmarkId: string): Promise<void> {
+    await this.#bookmarkRepository.delete(bookmarkId);
+    this.bookmarks.update((list) => list.filter((b) => b.id !== bookmarkId));
   }
 
   #scrollToFirstUnread(chapters: IChapter[], progressList: IReadingProgress[]): void {

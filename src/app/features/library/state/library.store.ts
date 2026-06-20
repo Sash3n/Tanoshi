@@ -81,6 +81,17 @@ export class LibraryStore {
   }
 
   /**
+   * Flips a series' favorite flag and updates it in place in the loaded list.
+   * @param seriesId The id of the series to toggle.
+   */
+  async toggleFavorite(seriesId: string): Promise<void> {
+    const nextValue = await this.#libraryService.toggleFavorite(seriesId);
+    this.seriesList.update((currentList) =>
+      currentList.map((s) => (s.id === seriesId ? { ...s, isFavorite: nextValue } : s)),
+    );
+  }
+
+  /**
    * Deletes a series and all its chapters, then refreshes the list.
    * @param seriesId The id of the series to remove.
    */

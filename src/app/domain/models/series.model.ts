@@ -14,6 +14,7 @@ export interface ISeries {
   readonly synopsis: string | null;
   readonly author: string | null;
   readonly artist: string | null;
+  readonly isFavorite: boolean;
   readonly createdAt: Date;
   readonly updatedAt: Date;
 }

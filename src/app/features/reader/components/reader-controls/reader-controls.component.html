@@ -62,6 +62,16 @@
         [color]="store.pageFilter() !== 'none' ? 'var(--tanoshi-accent-gold)' : 'var(--tanoshi-text-secondary)'" />
     </button>
 
+    <!-- Bookmark toggle -->
+    <button
+      (click)="onToggleBookmark()"
+      class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[var(--tanoshi-bg-surface)] transition-colors"
+      [attr.aria-label]="store.isCurrentPageBookmarked() ? 'Remove bookmark' : 'Bookmark this page'"
+    >
+      <lucide-icon [img]="bookmarkIcon" size="20"
+        [class]="store.isCurrentPageBookmarked() ? 'fill-[var(--tanoshi-accent-gold)] text-[var(--tanoshi-accent-gold)]' : 'text-[var(--tanoshi-text-secondary)]'" />
+    </button>
+
     <!-- Close controls -->
     <button
       (click)="store.hideControls()"

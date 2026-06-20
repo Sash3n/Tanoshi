@@ -56,7 +56,7 @@
     } @else if (store.isEmpty()) {
       <app-empty-state />
     } @else {
-      <app-library-grid [seriesList]="store.filteredSeries()" />
+      <app-library-grid [seriesList]="store.filteredSeries()" (toggleFavorite)="onToggleFavorite($event)" />
     }
   </main>
 

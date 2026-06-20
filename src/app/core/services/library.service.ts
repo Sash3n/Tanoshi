@@ -74,6 +74,7 @@ export class LibraryService {
         synopsis: null,
         author: null,
         artist: null,
+        isFavorite: false,
         createdAt: now,
         updatedAt: now,
       });
@@ -110,6 +111,15 @@ export class LibraryService {
   async deleteSeries(seriesId: string): Promise<void> {
     await this.#chapterRepository.deleteBySeriesId(seriesId);
     await this.#seriesRepository.delete(seriesId);
+  }
+
+  /**
+   * Flips a series' favorite flag.
+   * @param seriesId The id of the series to toggle.
+   * @returns The favorite flag's new value.
+   */
+  async toggleFavorite(seriesId: string): Promise<boolean> {
+    return this.#seriesRepository.toggleFavorite(seriesId);
   }
 
   /**

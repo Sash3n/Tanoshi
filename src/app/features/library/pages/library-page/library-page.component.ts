@@ -23,4 +23,8 @@ export class LibraryPageComponent implements OnInit {
   protected async onFileSelected(file: File): Promise<void> {
     await this.store.importFile(file);
   }
+
+  protected async onToggleFavorite(seriesId: string): Promise<void> {
+    await this.store.toggleFavorite(seriesId);
+  }
 }

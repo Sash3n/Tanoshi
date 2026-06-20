@@ -218,4 +218,50 @@ describe('ReaderStore', () => {
       revokespy.mockRestore();
     });
   });
+
+  // ── Bookmarks ──────────────────────────────────────────────────────────────
+
+  describe('bookmarks', () => {
+    afterEach(async () => {
+      await tanoshiDb.bookmarks.clear();
+    });
+
+    it('should do nothing when no chapter is open', async () => {
+      store.currentChapter.set(null);
+      await store.toggleBookmark();
+      expect(store.bookmarks()).toEqual([]);
+    });
+
+    it('should create a bookmark on the current page when none exists', async () => {
+      store.currentChapter.set(MOCK_CHAPTER);
+      store.currentPageIndex.set(4);
+
+      await store.toggleBookmark();
+
+      expect(store.isCurrentPageBookmarked()).toBe(true);
+      expect(store.bookmarks()).toHaveLength(1);
+      expect(store.bookmarks()[0].pageIndex).toBe(4);
+    });
+
+    it('should remove the bookmark on the current page when one already exists', async () => {
+      store.currentChapter.set(MOCK_CHAPTER);
+      store.currentPageIndex.set(4);
+      await store.toggleBookmark();
+
+      await store.toggleBookmark();
+
+      expect(store.isCurrentPageBookmarked()).toBe(false);
+      expect(store.bookmarks()).toHaveLength(0);
+    });
+
+    it('should clear bookmarks on closeChapter', async () => {
+      store.currentChapter.set(MOCK_CHAPTER);
+      store.currentPageIndex.set(0);
+      await store.toggleBookmark();
+
+      await store.closeChapter();
+
+      expect(store.bookmarks()).toEqual([]);
+    });
+  });
 });

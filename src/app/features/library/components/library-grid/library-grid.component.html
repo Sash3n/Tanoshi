@@ -1,5 +1,5 @@
 <div class="grid grid-cols-3 gap-3 p-4">
   @for (series of seriesList(); track series.id) {
-    <app-series-card [series]="series" />
+    <app-series-card [series]="series" (toggleFavorite)="toggleFavorite.emit($event)" />
   }
 </div>
