@@ -57,6 +57,14 @@
       [metadata]="metadata()"
     />
 
+    <!-- Tags -->
+    <app-tag-chips
+      [allTags]="allTags()"
+      [appliedTagIds]="series()!.tagIds"
+      (removeTag)="onRemoveTag($event)"
+      (submitTagName)="onSubmitTagName($event)"
+    />
+
     <!-- Bookmarks -->
     @if (bookmarks().length > 0) {
       <div class="px-4 py-2 flex items-center border-t border-[var(--tanoshi-border-subtle)]">
