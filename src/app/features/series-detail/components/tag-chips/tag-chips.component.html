@@ -1,0 +1,43 @@
+<div class="px-4 py-2 flex flex-wrap items-center gap-2">
+  @for (tag of appliedTags(); track tag.id) {
+    <span
+      class="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-mono"
+      [style.background-color]="tag.color + '33'"
+      [style.color]="tag.color"
+    >
+      {{ tag.name }}
+      <button
+        type="button"
+        (click)="removeTag.emit(tag.id)"
+        [attr.aria-label]="'Remove tag ' + tag.name"
+        class="hover:opacity-70"
+      >
+        <lucide-icon [img]="xIcon" size="10" />
+      </button>
+    </span>
+  }
+
+  @if (isAdding()) {
+    <input
+      type="text"
+      autofocus
+      placeholder="Tag name…"
+      class="px-2 py-1 rounded-full text-[10px] font-mono bg-[var(--tanoshi-bg-surface)] border border-[var(--tanoshi-border-medium)] text-[var(--tanoshi-text-primary)] outline-none w-24"
+      [value]="draftName()"
+      (input)="onDraftInput($event)"
+      (keydown.enter)="onSubmit()"
+      (keydown.escape)="onCancel()"
+      (blur)="onSubmit()"
+    />
+  } @else {
+    <button
+      type="button"
+      (click)="startAdding()"
+      aria-label="Add tag"
+      class="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-mono border border-[var(--tanoshi-border-medium)] text-[var(--tanoshi-text-tertiary)] hover:border-[var(--tanoshi-accent-gold)] transition-colors"
+    >
+      <lucide-icon [img]="plusIcon" size="10" />
+      Tag
+    </button>
+  }
+</div>

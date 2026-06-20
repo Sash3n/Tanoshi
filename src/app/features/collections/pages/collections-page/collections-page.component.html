@@ -1,0 +1,61 @@
+<div class="min-h-screen bg-[var(--tanoshi-bg-base)] flex flex-col pb-20">
+  <header class="px-4 pt-12 pb-3 flex items-end justify-between">
+    <h1 class="text-[var(--tanoshi-text-primary)] text-2xl font-serif tracking-wide">
+      Collections
+    </h1>
+    <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono">
+      {{ store.collections().length }}
+    </span>
+  </header>
+
+  <main class="flex-1 px-4 flex flex-col gap-2">
+    @if (store.isLoading() && store.collections().length === 0) {
+      <div class="flex items-center justify-center py-24">
+        <div class="w-6 h-6 border-2 border-[var(--tanoshi-accent-gold)] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    } @else if (store.collections().length === 0 && !isCreating()) {
+      <div class="flex flex-col items-center justify-center py-24 gap-3 px-8 text-center">
+        <lucide-icon [img]="folderIcon" size="40" color="var(--tanoshi-text-tertiary)" class="opacity-30" />
+        <p class="text-[var(--tanoshi-text-secondary)] text-sm">No collections yet</p>
+      </div>
+    }
+
+    @for (collection of store.collections(); track collection.id) {
+      <a
+        [routerLink]="['/collections', collection.id]"
+        class="flex items-center justify-between px-3 py-3 rounded-lg bg-[var(--tanoshi-bg-surface)] border border-[var(--tanoshi-border-subtle)] hover:border-[var(--tanoshi-accent-gold)] transition-colors"
+      >
+        <div class="flex items-center gap-2">
+          <lucide-icon [img]="folderIcon" size="16" color="var(--tanoshi-accent-gold)" />
+          <span class="text-[var(--tanoshi-text-primary)] text-sm font-serif">{{ collection.name }}</span>
+        </div>
+        <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono">
+          {{ collection.seriesIds.length }}
+        </span>
+      </a>
+    }
+
+    @if (isCreating()) {
+      <input
+        type="text"
+        autofocus
+        placeholder="Collection name…"
+        class="px-3 py-3 rounded-lg text-sm bg-[var(--tanoshi-bg-surface)] border border-[var(--tanoshi-border-medium)] text-[var(--tanoshi-text-primary)] outline-none"
+        [value]="draftName()"
+        (input)="onDraftInput($event)"
+        (keydown.enter)="onSubmit()"
+        (keydown.escape)="onCancel()"
+        (blur)="onSubmit()"
+      />
+    } @else {
+      <button
+        type="button"
+        (click)="startCreating()"
+        class="flex items-center justify-center gap-2 px-3 py-3 rounded-lg border border-dashed border-[var(--tanoshi-border-medium)] text-[var(--tanoshi-text-tertiary)] hover:border-[var(--tanoshi-accent-gold)] transition-colors"
+      >
+        <lucide-icon [img]="plusIcon" size="16" />
+        <span class="text-sm font-mono">New collection</span>
+      </button>
+    }
+  </main>
+</div>

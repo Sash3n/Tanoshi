@@ -11,6 +11,16 @@
   </a>
 
   <a
+    routerLink="/collections"
+    routerLinkActive="text-[var(--tanoshi-accent-gold)]"
+    class="flex flex-col items-center gap-1 flex-1 py-3 text-[var(--tanoshi-text-tertiary)] transition-colors"
+    aria-label="Collections"
+  >
+    <lucide-icon [img]="collectionsIcon" size="22" />
+    <span class="text-[10px] font-mono">Collections</span>
+  </a>
+
+  <a
     routerLink="/settings"
     routerLinkActive="text-[var(--tanoshi-accent-gold)]"
     class="flex flex-col items-center gap-1 flex-1 py-3 text-[var(--tanoshi-text-tertiary)] transition-colors"

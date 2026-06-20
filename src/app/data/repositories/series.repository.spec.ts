@@ -21,6 +21,7 @@ function buildSeries(overrides: Partial<ISeries> = {}): Omit<ISeries, 'id'> {
     author: null,
     artist: null,
     isFavorite: false,
+    tagIds: [],
     createdAt: now,
     updatedAt: now,
     ...overrides,
@@ -112,6 +113,43 @@ describe('SeriesRepository', () => {
 
       expect(favorites).toHaveLength(1);
       expect(favorites[0].title).toBe('Favorited');
+    });
+  });
+
+  describe('tags', () => {
+    it('should add a tag id to a series', async () => {
+      const newId = await repository.create(buildSeries());
+      await repository.addTag(newId, 'tag-1');
+
+      const series = await repository.getById(newId);
+      expect(series?.tagIds).toEqual(['tag-1']);
+    });
+
+    it('should not add a duplicate tag id', async () => {
+      const newId = await repository.create(buildSeries());
+      await repository.addTag(newId, 'tag-1');
+      await repository.addTag(newId, 'tag-1');
+
+      const series = await repository.getById(newId);
+      expect(series?.tagIds).toEqual(['tag-1']);
+    });
+
+    it('should remove a tag id from a series', async () => {
+      const newId = await repository.create(buildSeries({ tagIds: ['tag-1', 'tag-2'] }));
+      await repository.removeTag(newId, 'tag-1');
+
+      const series = await repository.getById(newId);
+      expect(series?.tagIds).toEqual(['tag-2']);
+    });
+
+    it('should return only series tagged with the given tag id', async () => {
+      const taggedId = await repository.create(buildSeries({ title: 'Tagged', tagIds: ['tag-1'] }));
+      await repository.create(buildSeries({ title: 'Untagged' }));
+
+      const tagged = await repository.getByTagId('tag-1');
+
+      expect(tagged).toHaveLength(1);
+      expect(tagged[0].id).toBe(taggedId);
     });
   });
 });
