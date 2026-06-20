@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { ContinueReadingService } from './continue-reading.service';
 import { ReadingProgressRepository } from '../../data/repositories/reading-progress.repository';
@@ -49,6 +49,10 @@ describe('ContinueReadingService', () => {
     chapterRepo = TestBed.inject(ChapterRepository);
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should return null when no progress records exist', async () => {
     vi.spyOn(progressRepo, 'getAll').mockResolvedValue([]);
     expect(await service.getLastRead()).toBeNull();
@@ -59,7 +63,7 @@ describe('ContinueReadingService', () => {
     expect(await service.getLastRead()).toBeNull();
   });
 
-  it('should return null when progress is on page 0 (not started)', async () => {
+  it('should return null when progress is on page 0 (not yet started)', async () => {
     const notStarted: IReadingProgress = { ...IN_PROGRESS, currentPageIndex: 0 };
     vi.spyOn(progressRepo, 'getAll').mockResolvedValue([notStarted]);
     expect(await service.getLastRead()).toBeNull();
@@ -78,10 +82,35 @@ describe('ContinueReadingService', () => {
     expect(result!.progress.currentPageIndex).toBe(12);
   });
 
+  it('should return the most recently read in-progress chapter when multiple exist', async () => {
+    const older: IReadingProgress = {
+      ...IN_PROGRESS, id: 'p-old', chapterId: 'ch-old',
+      lastReadAt: new Date('2026-06-01'),
+    };
+    const newer: IReadingProgress = {
+      ...IN_PROGRESS, id: 'p-new', chapterId: 'ch-new',
+      lastReadAt: new Date('2026-06-10'),
+    };
+    // getAll() returns sorted desc by lastReadAt — newer first
+    vi.spyOn(progressRepo, 'getAll').mockResolvedValue([newer, older]);
+    vi.spyOn(seriesRepo, 'getById').mockResolvedValue(MOCK_SERIES);
+    vi.spyOn(chapterRepo, 'getById').mockResolvedValue({ ...MOCK_CHAPTER, id: 'ch-new' });
+
+    const result = await service.getLastRead();
+    expect(result!.progress.chapterId).toBe('ch-new');
+  });
+
   it('should return null when the series record cannot be found', async () => {
     vi.spyOn(progressRepo, 'getAll').mockResolvedValue([IN_PROGRESS]);
     vi.spyOn(seriesRepo, 'getById').mockResolvedValue(undefined);
     vi.spyOn(chapterRepo, 'getById').mockResolvedValue(MOCK_CHAPTER);
+    expect(await service.getLastRead()).toBeNull();
+  });
+
+  it('should return null when the chapter record cannot be found', async () => {
+    vi.spyOn(progressRepo, 'getAll').mockResolvedValue([IN_PROGRESS]);
+    vi.spyOn(seriesRepo, 'getById').mockResolvedValue(MOCK_SERIES);
+    vi.spyOn(chapterRepo, 'getById').mockResolvedValue(undefined);
     expect(await service.getLastRead()).toBeNull();
   });
 });
