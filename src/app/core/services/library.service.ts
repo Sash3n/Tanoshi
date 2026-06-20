@@ -114,6 +114,15 @@ export class LibraryService {
   }
 
   /**
+   * Flips a series' favorite flag.
+   * @param seriesId The id of the series to toggle.
+   * @returns The favorite flag's new value.
+   */
+  async toggleFavorite(seriesId: string): Promise<boolean> {
+    return this.#seriesRepository.toggleFavorite(seriesId);
+  }
+
+  /**
    * Checks whether the Capacitor Filesystem permission is granted on Android.
    * Returns true if we can proceed, false if the user denied.
    */

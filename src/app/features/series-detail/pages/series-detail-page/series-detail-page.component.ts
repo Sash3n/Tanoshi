@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit, afterNextRender, Injector } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { LucideAngularModule, ArrowLeft } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, Star } from 'lucide-angular';
 import { SeriesRepository } from '../../../../data/repositories/series.repository';
 import { ChapterRepository } from '../../../../data/repositories/chapter.repository';
 import { ReadingProgressRepository } from '../../../../data/repositories/reading-progress.repository';
@@ -33,6 +33,7 @@ export class SeriesDetailPageComponent implements OnInit {
   protected readonly metadata = signal<ISeriesMetadata | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly arrowLeftIcon = ArrowLeft;
+  protected readonly starIcon = Star;
 
   async ngOnInit(): Promise<void> {
     const seriesId = this.#route.snapshot.paramMap.get('id');
@@ -64,6 +65,13 @@ export class SeriesDetailPageComponent implements OnInit {
     void this.#metadataService.fetchMetadata(seriesData.title).then((fetchedMetadata) => {
       this.metadata.set(fetchedMetadata);
     });
+  }
+
+  protected async onToggleFavorite(): Promise<void> {
+    const current = this.series();
+    if (!current) return;
+    const nextValue = await this.#seriesRepository.toggleFavorite(current.id);
+    this.series.set({ ...current, isFavorite: nextValue });
   }
 
   #scrollToFirstUnread(chapters: IChapter[], progressList: IReadingProgress[]): void {

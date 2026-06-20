@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { SeriesCardComponent } from '../series-card/series-card.component';
 import type { ISeries } from '../../../../domain/models/series.model';
 
@@ -11,4 +11,7 @@ import type { ISeries } from '../../../../domain/models/series.model';
 export class LibraryGridComponent {
   /** The list of series to render in the grid. */
   readonly seriesList = input.required<ISeries[]>();
+
+  /** Emits the series id when a card's favorite star is clicked. */
+  readonly toggleFavorite = output<string>();
 }

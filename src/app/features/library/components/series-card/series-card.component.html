@@ -23,6 +23,20 @@
     @if (hasActiveReading()) {
       <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[var(--tanoshi-accent-gold)]"></div>
     }
+
+    <!-- Favorite toggle -->
+    <button
+      type="button"
+      (click)="onToggleFavorite($event)"
+      [attr.aria-label]="series().isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+      class="absolute top-2 left-2 p-1 rounded-full bg-black/40 hover:bg-black/60 transition-colors duration-150"
+    >
+      <lucide-icon
+        [img]="starIcon"
+        [size]="14"
+        [class]="series().isFavorite ? 'fill-[var(--tanoshi-accent-gold)] text-[var(--tanoshi-accent-gold)]' : 'text-white'"
+      />
+    </button>
   </div>
 
   <!-- Card body -->

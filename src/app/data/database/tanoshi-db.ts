@@ -40,9 +40,11 @@ export class TanoshiDatabase extends Dexie {
       readingProgress: '++id, &chapterId, seriesId, lastReadAt, isCompleted',
       metadataCache:   '++id, &url, cachedAt',
     });
-    // v4: favorites (indexed boolean on series) and per-page bookmarks
+    // v4: favorites and per-page bookmarks.
+    // isFavorite is not indexed — boolean is not a valid IndexedDB key type,
+    // so favorites are filtered in-memory in SeriesRepository.getFavorites().
     this.version(4).stores({
-      series:          '++id, title, anilistId, mangaDexId, createdAt, isFavorite',
+      series:          '++id, title, anilistId, mangaDexId, createdAt',
       chapters:        '++id, seriesId, chapterNumber, volumeNumber',
       readingProgress: '++id, &chapterId, seriesId, lastReadAt, isCompleted',
       metadataCache:   '++id, &url, cachedAt',
