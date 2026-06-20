@@ -75,6 +75,7 @@ export class LibraryService {
         author: null,
         artist: null,
         isFavorite: false,
+        tagIds: [],
         createdAt: now,
         updatedAt: now,
       });

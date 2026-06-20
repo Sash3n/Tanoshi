@@ -21,6 +21,7 @@ function buildSeries(overrides: Partial<ISeries> = {}): Omit<ISeries, 'id'> {
     author: null,
     artist: null,
     isFavorite: false,
+    tagIds: [],
     createdAt: now,
     updatedAt: now,
     ...overrides,
