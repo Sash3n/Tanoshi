@@ -126,5 +126,56 @@
       </button>
     </section>
 
+    <!-- ── Backup ─────────────────────────────────────────────────────────── -->
+    <section class="px-4 py-5 border-t border-[var(--tanoshi-border-subtle)]">
+      <div class="flex items-center gap-2 mb-4">
+        <lucide-icon [img]="downloadIcon" size="16" color="var(--tanoshi-accent-gold)" />
+        <h2 class="text-[var(--tanoshi-text-secondary)] text-xs font-mono uppercase tracking-widest">Backup</h2>
+      </div>
+
+      <p class="text-[var(--tanoshi-text-tertiary)] text-xs mb-4">
+        Exports your library, reading progress, bookmarks, tags, and collections as a JSON file.
+        Manga page files are not included and must be re-imported separately.
+      </p>
+
+      <div class="flex gap-2">
+        <button
+          (click)="onExportBackup()"
+          [disabled]="isExporting()"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[var(--tanoshi-border-medium)] hover:border-[var(--tanoshi-accent-gold)] transition-colors disabled:opacity-50"
+        >
+          @if (isExporting()) {
+            <lucide-icon [img]="loaderIcon" size="16" color="var(--tanoshi-text-secondary)" class="animate-spin" />
+          } @else {
+            <lucide-icon [img]="downloadIcon" size="16" color="var(--tanoshi-text-secondary)" />
+          }
+          <span class="text-[var(--tanoshi-text-primary)] text-sm">Export backup</span>
+        </button>
+
+        <label
+          class="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[var(--tanoshi-border-medium)] hover:border-[var(--tanoshi-accent-gold)] transition-colors cursor-pointer"
+          [class.opacity-50]="isImporting()"
+        >
+          @if (isImporting()) {
+            <lucide-icon [img]="loaderIcon" size="16" color="var(--tanoshi-text-secondary)" class="animate-spin" />
+          } @else {
+            <lucide-icon [img]="uploadIcon" size="16" color="var(--tanoshi-text-secondary)" />
+          }
+          <span class="text-[var(--tanoshi-text-primary)] text-sm">Restore backup</span>
+          <input
+            type="file"
+            accept="application/json"
+            class="hidden"
+            [disabled]="isImporting()"
+            (change)="onImportFileSelected($event)"
+          />
+        </label>
+      </div>
+
+      @if (importError()) {
+        <p class="text-red-400 text-xs mt-3">{{ importError() }}</p>
+      }
+    </section>
+
   </div>
 </div>

@@ -1,7 +1,8 @@
 import { Component, inject, signal, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { LucideAngularModule, ArrowLeft, BookOpen, Palette, HardDrive, Library, CheckCircle, Loader, BarChart2 } from 'lucide-angular';
+import { LucideAngularModule, ArrowLeft, BookOpen, Palette, HardDrive, Library, CheckCircle, Loader, BarChart2, Download, Upload } from 'lucide-angular';
 import { SettingsStore } from '../../state/settings.store';
+import { BackupService } from '../../../../core/services/backup.service';
 import { ReadingMode } from '../../../../domain/enums/reading-mode.enum';
 import { ReadingStatsComponent } from '../../components/reading-stats/reading-stats.component';
 
@@ -13,6 +14,7 @@ import { ReadingStatsComponent } from '../../components/reading-stats/reading-st
 })
 export class SettingsPageComponent implements OnDestroy {
   readonly #router = inject(Router);
+  readonly #backupService = inject(BackupService);
   #cacheClearedTimer: ReturnType<typeof setTimeout> | null = null;
 
   protected readonly store = inject(SettingsStore);
@@ -26,6 +28,8 @@ export class SettingsPageComponent implements OnDestroy {
   protected readonly checkCircleIcon = CheckCircle;
   protected readonly loaderIcon = Loader;
   protected readonly barChartIcon = BarChart2;
+  protected readonly downloadIcon = Download;
+  protected readonly uploadIcon = Upload;
 
   protected readonly readingModeOptions = [
     { mode: ReadingMode.PagedRTL,  label: 'RTL',     sub: 'Manga style' },
@@ -40,6 +44,10 @@ export class SettingsPageComponent implements OnDestroy {
 
   protected readonly isClearingCache = signal(false);
   protected readonly cacheCleared = signal(false);
+
+  protected readonly isExporting = signal(false);
+  protected readonly isImporting = signal(false);
+  protected readonly importError = signal<string | null>(null);
 
   ngOnDestroy(): void {
     if (this.#cacheClearedTimer !== null) {
@@ -67,5 +75,47 @@ export class SettingsPageComponent implements OnDestroy {
       this.cacheCleared.set(false);
       this.#cacheClearedTimer = null;
     }, 3000);
+  }
+
+  protected async onExportBackup(): Promise<void> {
+    if (this.isExporting()) return;
+    this.isExporting.set(true);
+    try {
+      const payload = await this.#backupService.buildExportPayload();
+      const json = JSON.stringify(payload, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `tanoshi-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      this.isExporting.set(false);
+    }
+  }
+
+  protected async onImportFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    const confirmed = window.confirm(
+      'Restoring a backup replaces your entire library, reading progress, bookmarks, tags, and collections. This cannot be undone. Continue?',
+    );
+    if (!confirmed) return;
+
+    this.isImporting.set(true);
+    this.importError.set(null);
+    try {
+      const fileText = await file.text();
+      const payload = this.#backupService.parseBackupFile(file, fileText);
+      await this.#backupService.restoreFromPayload(payload);
+      window.location.reload();
+    } catch (error) {
+      this.importError.set(error instanceof Error ? error.message : 'Failed to restore backup');
+      this.isImporting.set(false);
+    }
   }
 }
