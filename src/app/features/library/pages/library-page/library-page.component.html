@@ -26,6 +26,62 @@
     </div>
   </div>
 
+  <!-- Sort and favorites filter -->
+  <div class="px-4 pb-3 flex items-center gap-2">
+    <button
+      type="button"
+      (click)="store.cycleSortOption()"
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[var(--tanoshi-border-medium)] hover:border-[var(--tanoshi-accent-gold)] transition-colors"
+      aria-label="Cycle sort order"
+    >
+      <lucide-icon [img]="sortIcon" size="14" color="var(--tanoshi-text-secondary)" />
+      <span class="text-[var(--tanoshi-text-secondary)] text-xs font-mono">{{ sortLabels[store.sortOption()] }}</span>
+    </button>
+
+    <button
+      type="button"
+      (click)="onToggleFavoritesOnly()"
+      class="flex items-center justify-center w-8 h-8 rounded-md border transition-colors"
+      [class]="store.favoritesOnly() ? 'border-[var(--tanoshi-accent-gold)]' : 'border-[var(--tanoshi-border-medium)]'"
+      aria-label="Show favorites only"
+    >
+      <lucide-icon
+        [img]="starIcon"
+        size="14"
+        [class]="store.favoritesOnly() ? 'fill-[var(--tanoshi-accent-gold)] text-[var(--tanoshi-accent-gold)]' : 'text-[var(--tanoshi-text-secondary)]'"
+      />
+    </button>
+  </div>
+
+  <!-- Genre and tag filter chips -->
+  @if (store.availableGenres().length > 0 || allTags().length > 0) {
+    <div class="px-4 pb-3 flex flex-wrap gap-1.5">
+      @for (genre of store.availableGenres(); track genre) {
+        <button
+          type="button"
+          (click)="onToggleGenreFilter(genre)"
+          class="px-2 py-1 rounded-full text-[10px] font-mono border transition-colors"
+          [class]="store.activeGenre() === genre
+            ? 'border-[var(--tanoshi-accent-gold)] text-[var(--tanoshi-accent-gold)]'
+            : 'border-[var(--tanoshi-border-medium)] text-[var(--tanoshi-text-tertiary)]'"
+        >
+          {{ genre }}
+        </button>
+      }
+      @for (tag of allTags(); track tag.id) {
+        <button
+          type="button"
+          (click)="onToggleTagFilter(tag.id)"
+          class="px-2 py-1 rounded-full text-[10px] font-mono border transition-colors"
+          [style.border-color]="store.activeTagId() === tag.id ? tag.color : 'var(--tanoshi-border-medium)'"
+          [style.color]="store.activeTagId() === tag.id ? tag.color : 'var(--tanoshi-text-tertiary)'"
+        >
+          {{ tag.name }}
+        </button>
+      }
+    </div>
+  }
+
   <!-- Error banner -->
   @if (store.errorMessage()) {
     <div class="mx-4 mb-3 px-3 py-2 rounded-md bg-red-900/30 border border-red-800/50">
@@ -48,15 +104,19 @@
       <div class="flex items-center justify-center py-24">
         <div class="w-6 h-6 border-2 border-[var(--tanoshi-accent-gold)] border-t-transparent rounded-full animate-spin"></div>
       </div>
-    } @else if (store.filteredSeries().length === 0 && store.searchQuery()) {
+    } @else if (store.sortedSeries().length === 0 && (store.searchQuery() || store.favoritesOnly() || store.activeTagId() || store.activeGenre())) {
       <div class="flex flex-col items-center justify-center py-24 gap-3 px-8 text-center">
         <lucide-icon [img]="searchIcon" size="40" color="var(--tanoshi-text-tertiary)" class="opacity-30" />
-        <p class="text-[var(--tanoshi-text-secondary)] text-sm">No series match "{{ store.searchQuery() }}"</p>
+        @if (store.searchQuery()) {
+          <p class="text-[var(--tanoshi-text-secondary)] text-sm">No series match "{{ store.searchQuery() }}"</p>
+        } @else {
+          <p class="text-[var(--tanoshi-text-secondary)] text-sm">No series match the active filters</p>
+        }
       </div>
     } @else if (store.isEmpty()) {
       <app-empty-state />
     } @else {
-      <app-library-grid [seriesList]="store.filteredSeries()" (toggleFavorite)="onToggleFavorite($event)" />
+      <app-library-grid [seriesList]="store.sortedSeries()" (toggleFavorite)="onToggleFavorite($event)" />
     }
   </main>
 
