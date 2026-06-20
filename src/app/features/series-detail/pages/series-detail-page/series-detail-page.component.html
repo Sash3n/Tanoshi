@@ -57,6 +57,20 @@
       [metadata]="metadata()"
     />
 
+    <!-- Bookmarks -->
+    @if (bookmarks().length > 0) {
+      <div class="px-4 py-2 flex items-center border-t border-[var(--tanoshi-border-subtle)]">
+        <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono uppercase tracking-widest">
+          Bookmarks
+        </span>
+      </div>
+      <app-bookmarks-list
+        [bookmarks]="bookmarks()"
+        [chapters]="chapters()"
+        (removeBookmark)="onRemoveBookmark($event)"
+      />
+    }
+
     <!-- Chapter list header -->
     <div class="px-4 py-2 flex items-center border-t border-[var(--tanoshi-border-subtle)]">
       <span class="text-[var(--tanoshi-text-tertiary)] text-xs font-mono uppercase tracking-widest">

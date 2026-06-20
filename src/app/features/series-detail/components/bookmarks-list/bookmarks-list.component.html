@@ -1,0 +1,29 @@
+@if (rows().length > 0) {
+  <div class="px-4 py-2 flex flex-col gap-1.5">
+    @for (row of rows(); track row.bookmark.id) {
+      <a
+        [routerLink]="['/reader', row.bookmark.chapterId]"
+        [queryParams]="{ page: row.bookmark.pageIndex }"
+        class="flex items-center justify-between gap-2 px-3 py-2 rounded-md bg-[var(--tanoshi-bg-surface)] border border-[var(--tanoshi-border-subtle)] hover:border-[var(--tanoshi-accent-gold)] transition-colors"
+      >
+        <div class="flex items-center gap-2 min-w-0">
+          <lucide-icon [img]="bookmarkIcon" size="14" color="var(--tanoshi-accent-gold)" class="shrink-0" />
+          <span class="text-[var(--tanoshi-text-secondary)] text-xs font-mono truncate">
+            @if (row.chapterNumber !== null) {
+              Ch. {{ row.chapterNumber }} &middot;
+            }
+            Page {{ row.bookmark.pageIndex + 1 }}
+          </span>
+        </div>
+        <button
+          type="button"
+          (click)="onRemove($event, row.bookmark.id)"
+          aria-label="Remove bookmark"
+          class="shrink-0 p-1 rounded-full hover:bg-[var(--tanoshi-bg-elevated)]"
+        >
+          <lucide-icon [img]="xIcon" size="14" color="var(--tanoshi-text-tertiary)" />
+        </button>
+      </a>
+    }
+  </div>
+}

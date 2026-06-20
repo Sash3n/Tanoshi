@@ -77,6 +77,13 @@ export class ReaderPageComponent implements OnInit, OnDestroy {
     if (!file || !this.chapterId) return;
     this.awaitingFile.set(false);
     await this.store.openChapter(this.chapterId, file);
+
+    // A ?page= query param (e.g. from a bookmark link) overrides the
+    // last-read page that openChapter restores by default.
+    const requestedPage = this.#route.snapshot.queryParamMap.get('page');
+    if (requestedPage !== null) {
+      this.store.goToPage(Number(requestedPage));
+    }
   }
 
   protected onBackNavigation(): void {
