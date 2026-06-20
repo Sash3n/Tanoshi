@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LucideAngularModule, ArrowLeft, BookOpen, Palette, HardDrive, Library, CheckCircle, Loader, BarChart2, Download, Upload } from 'lucide-angular';
 import { SettingsStore } from '../../state/settings.store';
 import { BackupService } from '../../../../core/services/backup.service';
+import { MAX_BACKUP_FILE_SIZE_BYTES } from '../../../../core/constants/backup.constants';
 import { ReadingMode } from '../../../../domain/enums/reading-mode.enum';
 import { ReadingStatsComponent } from '../../components/reading-stats/reading-stats.component';
 
@@ -100,6 +101,17 @@ export class SettingsPageComponent implements OnDestroy {
     const file = input.files?.[0];
     input.value = '';
     if (!file) return;
+
+    // Reject oversized files before reading them into memory — checking only
+    // inside parseBackupFile would be too late, since file.text() below
+    // already has to materialise the full content as a string first.
+    if (file.size > MAX_BACKUP_FILE_SIZE_BYTES) {
+      this.importError.set(
+        `Backup file is too large (${Math.round(file.size / 1024 / 1024)}MB). ` +
+          `Maximum supported size is ${MAX_BACKUP_FILE_SIZE_BYTES / 1024 / 1024}MB.`,
+      );
+      return;
+    }
 
     const confirmed = window.confirm(
       'Restoring a backup replaces your entire library, reading progress, bookmarks, tags, and collections. This cannot be undone. Continue?',
