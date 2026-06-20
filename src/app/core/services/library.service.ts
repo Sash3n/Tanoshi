@@ -74,6 +74,7 @@ export class LibraryService {
         synopsis: null,
         author: null,
         artist: null,
+        isFavorite: false,
         createdAt: now,
         updatedAt: now,
       });
