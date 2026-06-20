@@ -100,6 +100,32 @@ describe('LibraryStore', () => {
 
       expect(store.filteredSeries().map((s) => s.id)).toEqual(['s1']);
     });
+
+    it('should filter by active genre', async () => {
+      vi.spyOn(libraryService, 'getAllSeries').mockResolvedValue([
+        buildSeries({ id: 's1', genres: ['Action'] }),
+        buildSeries({ id: 's2', genres: ['Romance'] }),
+      ]);
+      vi.spyOn(progressRepository, 'getAll').mockResolvedValue([]);
+      await store.loadLibrary();
+
+      store.setActiveGenre('Action');
+
+      expect(store.filteredSeries().map((s) => s.id)).toEqual(['s1']);
+    });
+  });
+
+  describe('availableGenres', () => {
+    it('should return unique genres sorted alphabetically', async () => {
+      vi.spyOn(libraryService, 'getAllSeries').mockResolvedValue([
+        buildSeries({ id: 's1', genres: ['Romance', 'Action'] }),
+        buildSeries({ id: 's2', genres: ['Action', 'Comedy'] }),
+      ]);
+      vi.spyOn(progressRepository, 'getAll').mockResolvedValue([]);
+      await store.loadLibrary();
+
+      expect(store.availableGenres()).toEqual(['Action', 'Comedy', 'Romance']);
+    });
   });
 
   describe('sortedSeries', () => {

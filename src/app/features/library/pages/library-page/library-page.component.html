@@ -53,6 +53,35 @@
     </button>
   </div>
 
+  <!-- Genre and tag filter chips -->
+  @if (store.availableGenres().length > 0 || allTags().length > 0) {
+    <div class="px-4 pb-3 flex flex-wrap gap-1.5">
+      @for (genre of store.availableGenres(); track genre) {
+        <button
+          type="button"
+          (click)="onToggleGenreFilter(genre)"
+          class="px-2 py-1 rounded-full text-[10px] font-mono border transition-colors"
+          [class]="store.activeGenre() === genre
+            ? 'border-[var(--tanoshi-accent-gold)] text-[var(--tanoshi-accent-gold)]'
+            : 'border-[var(--tanoshi-border-medium)] text-[var(--tanoshi-text-tertiary)]'"
+        >
+          {{ genre }}
+        </button>
+      }
+      @for (tag of allTags(); track tag.id) {
+        <button
+          type="button"
+          (click)="onToggleTagFilter(tag.id)"
+          class="px-2 py-1 rounded-full text-[10px] font-mono border transition-colors"
+          [style.border-color]="store.activeTagId() === tag.id ? tag.color : 'var(--tanoshi-border-medium)'"
+          [style.color]="store.activeTagId() === tag.id ? tag.color : 'var(--tanoshi-text-tertiary)'"
+        >
+          {{ tag.name }}
+        </button>
+      }
+    </div>
+  }
+
   <!-- Error banner -->
   @if (store.errorMessage()) {
     <div class="mx-4 mb-3 px-3 py-2 rounded-md bg-red-900/30 border border-red-800/50">
@@ -75,13 +104,13 @@
       <div class="flex items-center justify-center py-24">
         <div class="w-6 h-6 border-2 border-[var(--tanoshi-accent-gold)] border-t-transparent rounded-full animate-spin"></div>
       </div>
-    } @else if (store.sortedSeries().length === 0 && (store.searchQuery() || store.favoritesOnly())) {
+    } @else if (store.sortedSeries().length === 0 && (store.searchQuery() || store.favoritesOnly() || store.activeTagId() || store.activeGenre())) {
       <div class="flex flex-col items-center justify-center py-24 gap-3 px-8 text-center">
         <lucide-icon [img]="searchIcon" size="40" color="var(--tanoshi-text-tertiary)" class="opacity-30" />
         @if (store.searchQuery()) {
           <p class="text-[var(--tanoshi-text-secondary)] text-sm">No series match "{{ store.searchQuery() }}"</p>
         } @else {
-          <p class="text-[var(--tanoshi-text-secondary)] text-sm">No favorited series yet</p>
+          <p class="text-[var(--tanoshi-text-secondary)] text-sm">No series match the active filters</p>
         }
       </div>
     } @else if (store.isEmpty()) {

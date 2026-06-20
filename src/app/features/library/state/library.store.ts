@@ -44,19 +44,33 @@ export class LibraryStore {
   /** When non-null, only series carrying this tag id are shown. */
   readonly activeTagId = signal<string | null>(null);
 
-  /** Active sort applied after search/favorite/tag filtering. */
+  /** When non-null, only series carrying this genre are shown. */
+  readonly activeGenre = signal<string | null>(null);
+
+  /** Active sort applied after search/favorite/tag/genre filtering. */
   readonly sortOption = signal<LibrarySortOption>('recentlyAdded');
 
-  /** Series filtered by search query, favorites-only, and active tag. */
+  /** Unique genres across the loaded library, sorted alphabetically. */
+  readonly availableGenres = computed(() => {
+    const genres = new Set<string>();
+    for (const series of this.seriesList()) {
+      for (const genre of series.genres) genres.add(genre);
+    }
+    return [...genres].sort((a, b) => a.localeCompare(b));
+  });
+
+  /** Series filtered by search query, favorites-only, active tag, and active genre. */
   readonly filteredSeries = computed(() => {
     const query = this.searchQuery().trim().toLowerCase();
     const onlyFavorites = this.favoritesOnly();
     const tagId = this.activeTagId();
+    const genre = this.activeGenre();
 
     return this.seriesList().filter((s) => {
       if (query && !s.title.toLowerCase().includes(query)) return false;
       if (onlyFavorites && !s.isFavorite) return false;
       if (tagId && !s.tagIds.includes(tagId)) return false;
+      if (genre && !s.genres.includes(genre)) return false;
       return true;
     });
   });
@@ -123,6 +137,10 @@ export class LibraryStore {
 
   setActiveTagId(tagId: string | null): void {
     this.activeTagId.set(tagId);
+  }
+
+  setActiveGenre(genre: string | null): void {
+    this.activeGenre.set(genre);
   }
 
   /** Cycles to the next sort option in LIBRARY_SORT_OPTIONS order. */
