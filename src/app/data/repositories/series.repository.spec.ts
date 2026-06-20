@@ -85,4 +85,33 @@ describe('SeriesRepository', () => {
     const deletedSeries = await repository.getById(newId);
     expect(deletedSeries).toBeUndefined();
   });
+
+  describe('favorites', () => {
+    it('should toggle isFavorite from false to true and back', async () => {
+      const newId = await repository.create(buildSeries());
+
+      const afterFirstToggle = await repository.toggleFavorite(newId);
+      expect(afterFirstToggle).toBe(true);
+      expect((await repository.getById(newId))?.isFavorite).toBe(true);
+
+      const afterSecondToggle = await repository.toggleFavorite(newId);
+      expect(afterSecondToggle).toBe(false);
+      expect((await repository.getById(newId))?.isFavorite).toBe(false);
+    });
+
+    it('should throw when toggling a non-existent series', async () => {
+      await expect(repository.toggleFavorite('missing-id')).rejects.toThrow();
+    });
+
+    it('should return only favorited series from getFavorites', async () => {
+      const favId = await repository.create(buildSeries({ title: 'Favorited' }));
+      await repository.create(buildSeries({ title: 'Not favorited' }));
+      await repository.toggleFavorite(favId);
+
+      const favorites = await repository.getFavorites();
+
+      expect(favorites).toHaveLength(1);
+      expect(favorites[0].title).toBe('Favorited');
+    });
+  });
 });

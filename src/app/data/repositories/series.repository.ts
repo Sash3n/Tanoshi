@@ -30,4 +30,21 @@ export class SeriesRepository {
   async delete(seriesId: string): Promise<void> {
     await tanoshiDb.series.delete(seriesId);
   }
+
+  /** Returns all series flagged as favorites. */
+  async getFavorites(): Promise<ISeries[]> {
+    return tanoshiDb.series.filter((s) => s.isFavorite).toArray();
+  }
+
+  /** Flips a series' favorite flag and returns the new value. */
+  async toggleFavorite(seriesId: string): Promise<boolean> {
+    return tanoshiDb.transaction('rw', tanoshiDb.series, async () => {
+      const series = await tanoshiDb.series.get(seriesId);
+      if (!series) throw new Error(`Series ${seriesId} not found`);
+      const nextValue = !series.isFavorite;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await tanoshiDb.series.update(seriesId, { isFavorite: nextValue } as any);
+      return nextValue;
+    });
+  }
 }
