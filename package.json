@@ -39,7 +39,7 @@
     "@angular/build": "^21.2.15",
     "@angular/cli": "^21.2.15",
     "@angular/compiler-cli": "^21.2.0",
-    "@angular/platform-browser-dynamic": "^22.0.1",
+    "@angular/platform-browser-dynamic": "^21.2.0",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.3.1",
     "@testing-library/angular": "^19.4.1",

@@ -46,8 +46,7 @@ export class SeriesRepository {
     await tanoshiDb.transaction('rw', tanoshiDb.series, async () => {
       const series = await tanoshiDb.series.get(seriesId);
       if (!series || series.tagIds.includes(tagId)) return;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await tanoshiDb.series.update(seriesId, { tagIds: [...series.tagIds, tagId] } as any);
+      await tanoshiDb.series.update(seriesId, { tagIds: [...series.tagIds, tagId] });
     });
   }
 
@@ -56,10 +55,9 @@ export class SeriesRepository {
     await tanoshiDb.transaction('rw', tanoshiDb.series, async () => {
       const series = await tanoshiDb.series.get(seriesId);
       if (!series) return;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await tanoshiDb.series.update(seriesId, {
         tagIds: series.tagIds.filter((id) => id !== tagId),
-      } as any);
+      });
     });
   }
 

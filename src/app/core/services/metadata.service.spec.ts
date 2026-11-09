@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 /** Drains the microtask queue so sequential async calls can proceed. */
 const flushMicrotasks = () => new Promise<void>((resolve) => setTimeout(resolve, 0));

@@ -8,8 +8,6 @@ import { ANILIST_GRAPHQL_URL, METADATA_CACHE_TTL_DAYS } from '../constants/app.c
 
 const CACHE_TTL_MS = METADATA_CACHE_TTL_DAYS * 24 * 60 * 60 * 1000;
 const TEST_URL = `${ANILIST_GRAPHQL_URL}`;
-/** Drains the microtask queue so async interceptor Dexie reads can resolve before we expect HTTP requests. */
-const flushMicrotasks = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 const MOCK_BODY = { data: { Media: { id: 1 } } };
 
 describe('metadataCacheInterceptor', () => {

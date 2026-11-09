@@ -17,16 +17,16 @@ interface IAniListMedia {
   genres: string[];
   coverImage: { large: string | null };
   staff: {
-    edges: Array<{
+    edges: {
       role: string;
       node: { name: { full: string } };
-    }>;
+    }[];
   };
 }
 
 interface IAniListResponse {
   data: { Media: IAniListMedia | null };
-  errors?: Array<{ message: string }>;
+  errors?: { message: string }[];
 }
 
 interface IMangaDexAuthor {
@@ -39,10 +39,10 @@ interface IMangaDexManga {
   attributes: {
     title: Record<string, string>;
     description: Record<string, string>;
-    tags: Array<{ attributes: { name: Record<string, string>; group: string } }>;
+    tags: { attributes: { name: Record<string, string>; group: string } }[];
     authors?: IMangaDexAuthor[];
   };
-  relationships: Array<{ type: string; id: string; attributes?: { name: string; fileName?: string } }>;
+  relationships: { type: string; id: string; attributes?: { name: string; fileName?: string } }[];
 }
 
 interface IMangaDexSearchResponse {

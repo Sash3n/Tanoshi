@@ -1,11 +1,12 @@
 import { Component, input, output, computed, signal } from '@angular/core';
 import { LucideAngularModule, Plus, X } from 'lucide-angular';
 import type { ITag } from '../../../../domain/models/tag.model';
+import { AutofocusDirective } from '../../../../shared/directives/autofocus.directive';
 
 @Component({
   selector: 'app-tag-chips',
   standalone: true,
-  imports: [LucideAngularModule],
+  imports: [LucideAngularModule, AutofocusDirective],
   templateUrl: './tag-chips.component.html',
 })
 export class TagChipsComponent {

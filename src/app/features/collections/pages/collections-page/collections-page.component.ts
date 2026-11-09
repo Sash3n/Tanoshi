@@ -2,11 +2,12 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule, FolderHeart, Plus } from 'lucide-angular';
 import { CollectionsStore } from '../../state/collections.store';
+import { AutofocusDirective } from '../../../../shared/directives/autofocus.directive';
 
 @Component({
   selector: 'app-collections-page',
   standalone: true,
-  imports: [RouterLink, LucideAngularModule],
+  imports: [RouterLink, LucideAngularModule, AutofocusDirective],
   templateUrl: './collections-page.component.html',
 })
 export class CollectionsPageComponent implements OnInit {

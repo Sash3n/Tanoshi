@@ -1,6 +1,5 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { ReadingMode } from '../../../domain/enums/reading-mode.enum';
-import { ReadingDirection } from '../../../domain/enums/reading-direction.enum';
 import { ReadingProgressRepository } from '../../../data/repositories/reading-progress.repository';
 import { ChapterRepository } from '../../../data/repositories/chapter.repository';
 import { BookmarkRepository } from '../../../data/repositories/bookmark.repository';
@@ -9,8 +8,6 @@ import type { IChapter } from '../../../domain/models/chapter.model';
 import type { IBookmark } from '../../../domain/models/bookmark.model';
 import {
   DEFAULT_READING_MODE,
-  DEFAULT_PRELOAD_PAGES_AHEAD,
-  DEFAULT_PRELOAD_PAGES_BEHIND,
   PROGRESS_SAVE_INTERVAL_PAGES,
   PAGE_FILTERS,
   type PageFilter,
@@ -24,7 +21,7 @@ export interface ILoadedPage {
 
 /**
  * Signal store for the manga reader.
- * Manages page navigation, reading mode, controls visibility, preload buffer, and progress persistence.
+ * Manages page navigation, reading mode, controls visibility, and progress persistence.
  */
 @Injectable({ providedIn: 'root' })
 export class ReaderStore {

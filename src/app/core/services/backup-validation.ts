@@ -100,85 +100,85 @@ function parseArray<T>(
 function parseSeries(raw: unknown): ISeries {
   if (!isPlainObject(raw)) throw new Error('Invalid backup data: series entry is not an object');
   return {
-    id: requireString(raw.id, 'series.id'),
-    title: requireString(raw.title, 'series.title'),
-    alternativeTitles: requireStringArray(raw.alternativeTitles, 'series.alternativeTitles'),
-    coverImageBase64: requireOptionalString(raw.coverImageBase64, 'series.coverImageBase64'),
-    totalChapterCount: requireNumber(raw.totalChapterCount, 'series.totalChapterCount'),
-    fileFormat: requireFileFormat(raw.fileFormat, 'series.fileFormat'),
-    localFilePath: requireString(raw.localFilePath, 'series.localFilePath'),
-    anilistId: requireOptionalNumber(raw.anilistId, 'series.anilistId'),
-    mangaDexId: requireOptionalString(raw.mangaDexId, 'series.mangaDexId'),
-    genres: requireStringArray(raw.genres, 'series.genres'),
-    synopsis: requireOptionalString(raw.synopsis, 'series.synopsis'),
-    author: requireOptionalString(raw.author, 'series.author'),
-    artist: requireOptionalString(raw.artist, 'series.artist'),
-    isFavorite: requireBoolean(raw.isFavorite, 'series.isFavorite'),
-    tagIds: requireStringArray(raw.tagIds, 'series.tagIds'),
-    createdAt: requireDate(raw.createdAt, 'series.createdAt'),
-    updatedAt: requireDate(raw.updatedAt, 'series.updatedAt'),
+    id: requireString(raw['id'], 'series.id'),
+    title: requireString(raw['title'], 'series.title'),
+    alternativeTitles: requireStringArray(raw['alternativeTitles'], 'series.alternativeTitles'),
+    coverImageBase64: requireOptionalString(raw['coverImageBase64'], 'series.coverImageBase64'),
+    totalChapterCount: requireNumber(raw['totalChapterCount'], 'series.totalChapterCount'),
+    fileFormat: requireFileFormat(raw['fileFormat'], 'series.fileFormat'),
+    localFilePath: requireString(raw['localFilePath'], 'series.localFilePath'),
+    anilistId: requireOptionalNumber(raw['anilistId'], 'series.anilistId'),
+    mangaDexId: requireOptionalString(raw['mangaDexId'], 'series.mangaDexId'),
+    genres: requireStringArray(raw['genres'], 'series.genres'),
+    synopsis: requireOptionalString(raw['synopsis'], 'series.synopsis'),
+    author: requireOptionalString(raw['author'], 'series.author'),
+    artist: requireOptionalString(raw['artist'], 'series.artist'),
+    isFavorite: requireBoolean(raw['isFavorite'], 'series.isFavorite'),
+    tagIds: requireStringArray(raw['tagIds'], 'series.tagIds'),
+    createdAt: requireDate(raw['createdAt'], 'series.createdAt'),
+    updatedAt: requireDate(raw['updatedAt'], 'series.updatedAt'),
   };
 }
 
 function parseChapter(raw: unknown): IChapter {
   if (!isPlainObject(raw)) throw new Error('Invalid backup data: chapter entry is not an object');
   return {
-    id: requireString(raw.id, 'chapter.id'),
-    seriesId: requireString(raw.seriesId, 'chapter.seriesId'),
-    chapterNumber: requireNumber(raw.chapterNumber, 'chapter.chapterNumber'),
-    volumeNumber: requireOptionalNumber(raw.volumeNumber, 'chapter.volumeNumber'),
-    title: requireOptionalString(raw.title, 'chapter.title'),
-    localFilePath: requireString(raw.localFilePath, 'chapter.localFilePath'),
-    pageCount: requireNumber(raw.pageCount, 'chapter.pageCount'),
-    fileSizeBytes: requireNumber(raw.fileSizeBytes, 'chapter.fileSizeBytes'),
-    importedAt: requireDate(raw.importedAt, 'chapter.importedAt'),
+    id: requireString(raw['id'], 'chapter.id'),
+    seriesId: requireString(raw['seriesId'], 'chapter.seriesId'),
+    chapterNumber: requireNumber(raw['chapterNumber'], 'chapter.chapterNumber'),
+    volumeNumber: requireOptionalNumber(raw['volumeNumber'], 'chapter.volumeNumber'),
+    title: requireOptionalString(raw['title'], 'chapter.title'),
+    localFilePath: requireString(raw['localFilePath'], 'chapter.localFilePath'),
+    pageCount: requireNumber(raw['pageCount'], 'chapter.pageCount'),
+    fileSizeBytes: requireNumber(raw['fileSizeBytes'], 'chapter.fileSizeBytes'),
+    importedAt: requireDate(raw['importedAt'], 'chapter.importedAt'),
   };
 }
 
 function parseReadingProgress(raw: unknown): IReadingProgress {
   if (!isPlainObject(raw)) throw new Error('Invalid backup data: readingProgress entry is not an object');
   return {
-    id: requireString(raw.id, 'readingProgress.id'),
-    chapterId: requireString(raw.chapterId, 'readingProgress.chapterId'),
-    seriesId: requireString(raw.seriesId, 'readingProgress.seriesId'),
-    currentPageIndex: requireNumber(raw.currentPageIndex, 'readingProgress.currentPageIndex'),
-    totalPageCount: requireNumber(raw.totalPageCount, 'readingProgress.totalPageCount'),
-    isCompleted: requireBoolean(raw.isCompleted, 'readingProgress.isCompleted'),
-    lastReadAt: requireDate(raw.lastReadAt, 'readingProgress.lastReadAt'),
-    readingDurationSeconds: requireNumber(raw.readingDurationSeconds, 'readingProgress.readingDurationSeconds'),
+    id: requireString(raw['id'], 'readingProgress.id'),
+    chapterId: requireString(raw['chapterId'], 'readingProgress.chapterId'),
+    seriesId: requireString(raw['seriesId'], 'readingProgress.seriesId'),
+    currentPageIndex: requireNumber(raw['currentPageIndex'], 'readingProgress.currentPageIndex'),
+    totalPageCount: requireNumber(raw['totalPageCount'], 'readingProgress.totalPageCount'),
+    isCompleted: requireBoolean(raw['isCompleted'], 'readingProgress.isCompleted'),
+    lastReadAt: requireDate(raw['lastReadAt'], 'readingProgress.lastReadAt'),
+    readingDurationSeconds: requireNumber(raw['readingDurationSeconds'], 'readingProgress.readingDurationSeconds'),
   };
 }
 
 function parseBookmark(raw: unknown): IBookmark {
   if (!isPlainObject(raw)) throw new Error('Invalid backup data: bookmark entry is not an object');
   return {
-    id: requireString(raw.id, 'bookmark.id'),
-    chapterId: requireString(raw.chapterId, 'bookmark.chapterId'),
-    seriesId: requireString(raw.seriesId, 'bookmark.seriesId'),
-    pageIndex: requireNumber(raw.pageIndex, 'bookmark.pageIndex'),
-    note: requireOptionalString(raw.note, 'bookmark.note'),
-    createdAt: requireDate(raw.createdAt, 'bookmark.createdAt'),
+    id: requireString(raw['id'], 'bookmark.id'),
+    chapterId: requireString(raw['chapterId'], 'bookmark.chapterId'),
+    seriesId: requireString(raw['seriesId'], 'bookmark.seriesId'),
+    pageIndex: requireNumber(raw['pageIndex'], 'bookmark.pageIndex'),
+    note: requireOptionalString(raw['note'], 'bookmark.note'),
+    createdAt: requireDate(raw['createdAt'], 'bookmark.createdAt'),
   };
 }
 
 function parseTag(raw: unknown): ITag {
   if (!isPlainObject(raw)) throw new Error('Invalid backup data: tag entry is not an object');
   return {
-    id: requireString(raw.id, 'tag.id'),
-    name: requireString(raw.name, 'tag.name'),
-    color: requireString(raw.color, 'tag.color'),
-    createdAt: requireDate(raw.createdAt, 'tag.createdAt'),
+    id: requireString(raw['id'], 'tag.id'),
+    name: requireString(raw['name'], 'tag.name'),
+    color: requireString(raw['color'], 'tag.color'),
+    createdAt: requireDate(raw['createdAt'], 'tag.createdAt'),
   };
 }
 
 function parseCollection(raw: unknown): ICollection {
   if (!isPlainObject(raw)) throw new Error('Invalid backup data: collection entry is not an object');
   return {
-    id: requireString(raw.id, 'collection.id'),
-    name: requireString(raw.name, 'collection.name'),
-    seriesIds: requireStringArray(raw.seriesIds, 'collection.seriesIds'),
-    createdAt: requireDate(raw.createdAt, 'collection.createdAt'),
-    updatedAt: requireDate(raw.updatedAt, 'collection.updatedAt'),
+    id: requireString(raw['id'], 'collection.id'),
+    name: requireString(raw['name'], 'collection.name'),
+    seriesIds: requireStringArray(raw['seriesIds'], 'collection.seriesIds'),
+    createdAt: requireDate(raw['createdAt'], 'collection.createdAt'),
+    updatedAt: requireDate(raw['updatedAt'], 'collection.updatedAt'),
   };
 }
 
@@ -192,19 +192,19 @@ export function parseBackupPayload(raw: unknown, supportedVersion: number): IBac
     throw new Error('Invalid backup data: root value is not an object');
   }
 
-  const version = requireNumber(raw.version, 'version');
+  const version = requireNumber(raw['version'], 'version');
   if (version !== supportedVersion) {
     throw new Error(`Unsupported backup version ${version} (expected ${supportedVersion})`);
   }
 
   return {
     version,
-    exportedAt: requireString(raw.exportedAt, 'exportedAt'),
-    series: parseArray(raw.series, 'series', parseSeries),
-    chapters: parseArray(raw.chapters, 'chapters', parseChapter),
-    readingProgress: parseArray(raw.readingProgress, 'readingProgress', parseReadingProgress),
-    bookmarks: parseArray(raw.bookmarks, 'bookmarks', parseBookmark),
-    tags: parseArray(raw.tags, 'tags', parseTag),
-    collections: parseArray(raw.collections, 'collections', parseCollection),
+    exportedAt: requireString(raw['exportedAt'], 'exportedAt'),
+    series: parseArray(raw['series'], 'series', parseSeries),
+    chapters: parseArray(raw['chapters'], 'chapters', parseChapter),
+    readingProgress: parseArray(raw['readingProgress'], 'readingProgress', parseReadingProgress),
+    bookmarks: parseArray(raw['bookmarks'], 'bookmarks', parseBookmark),
+    tags: parseArray(raw['tags'], 'tags', parseTag),
+    collections: parseArray(raw['collections'], 'collections', parseCollection),
   };
 }

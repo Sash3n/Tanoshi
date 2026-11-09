@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Filesystem } from '@capacitor/filesystem';
 import { CbzExtractorService } from './cbz-extractor.service';
 import { SeriesRepository } from '../../data/repositories/series.repository';
 import { ChapterRepository } from '../../data/repositories/chapter.repository';

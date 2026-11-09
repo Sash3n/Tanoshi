@@ -10,7 +10,6 @@ import {
   DEFAULT_PRELOAD_PAGES_AHEAD,
   DEFAULT_PRELOAD_PAGES_BEHIND,
 } from '../../../core/constants/reader.constants';
-import { ReadingProgressRepository } from '../../../data/repositories/reading-progress.repository';
 import { tanoshiDb } from '../../../data/database/tanoshi-db';
 
 const MOCK_CHAPTER: IChapter = {

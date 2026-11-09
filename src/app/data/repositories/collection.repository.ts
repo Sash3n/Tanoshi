@@ -40,11 +40,10 @@ export class CollectionRepository {
     await tanoshiDb.transaction('rw', tanoshiDb.collections, async () => {
       const collection = await tanoshiDb.collections.get(collectionId);
       if (!collection || collection.seriesIds.includes(seriesId)) return;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await tanoshiDb.collections.update(collectionId, {
         seriesIds: [...collection.seriesIds, seriesId],
         updatedAt: new Date(),
-      } as any);
+      });
     });
   }
 
@@ -53,11 +52,10 @@ export class CollectionRepository {
     await tanoshiDb.transaction('rw', tanoshiDb.collections, async () => {
       const collection = await tanoshiDb.collections.get(collectionId);
       if (!collection) return;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await tanoshiDb.collections.update(collectionId, {
         seriesIds: collection.seriesIds.filter((id) => id !== seriesId),
         updatedAt: new Date(),
-      } as any);
+      });
     });
   }
 }

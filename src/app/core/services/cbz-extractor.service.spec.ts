@@ -28,7 +28,6 @@ describe('CbzExtractorService', () => {
     vi.spyOn(URL, 'revokeObjectURL').mockReturnValue(undefined);
 
     // Stub the private cover-generation method to avoid Image/canvas in jsdom
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     vi.spyOn(service, 'resizeImageToBase64')
       .mockResolvedValue('data:image/jpeg;base64,mockcover');
   });
